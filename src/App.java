@@ -16,7 +16,7 @@ public class App {
     static public final String WINDOW_TITLE = "Q-Bounce";
     static public final int WINDOW_WIDTH = 800;
     static public final int WINDOW_HEIGHT = 600;
-    
+     
     public static void main(String[] args) {
         LwjglApplicationConfiguration cfg = new LwjglApplicationConfiguration();
         cfg.vSyncEnabled = false;   // disable vertical sync with the monitor

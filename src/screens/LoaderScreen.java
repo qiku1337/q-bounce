@@ -33,18 +33,30 @@ public class LoaderScreen implements Screen {
     
     private BitmapFont font;
     
-    private static final int        FRAME_COLS = 28;
+    private static final int        FRAME_COLS = 4;
     
-    private static final int        FRAME_ROWS = 1; 
+    private static final int        FRAME_ROWS = 2; 
        
     /**
      * Tick frame.
      */
     private float frame = 0.f;
     
+    public final GameScreen next;
+    
+    public boolean clearAssets;
+
+    public LoaderScreen(GameScreen next) {
+        this(next, true);
+    }
+    public LoaderScreen(GameScreen next, boolean clearAssets) {
+        this.next = next;
+        this.clearAssets = clearAssets;
+    }
+    
     @Override
     public void show() {        
-        machineTexture = new Texture(Gdx.files.internal("assets/ballguy.png"));        
+        machineTexture = new Texture(Gdx.files.internal("assets/load.png"));        
         TextureRegion[][] tmp = TextureRegion.split(machineTexture, machineTexture.getWidth()/FRAME_COLS, machineTexture.getHeight()/FRAME_ROWS);              // #10
         ballguy = new TextureRegion[FRAME_COLS * FRAME_ROWS];        
         int index = 0;
@@ -57,8 +69,7 @@ public class LoaderScreen implements Screen {
         spriteBatch = new SpriteBatch(); 
         
         sound = Gdx.audio.newSound(Gdx.files.internal("assets/menuloop.wav"));
-        long idsound = sound.play(1.0f);
-        sound.play(1.0f);
+        long idsound = sound.play(1.0f);        
         sound.setLooping(idsound, true);
         
         spriteBatch = new SpriteBatch();
@@ -80,7 +91,7 @@ public class LoaderScreen implements Screen {
                 Gdx.graphics.getWidth()/4.f,Gdx.graphics.getHeight()/2.f);  //wielkosc  
         
         font.setScale(2);       
-        font.draw(spriteBatch, "Loading...", 400, 150);        
+        font.draw(spriteBatch, "Please wait...", 400, 150);        
         spriteBatch.end();
 
         frame += 1.f*delta;

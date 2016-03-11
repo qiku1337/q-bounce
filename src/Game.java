@@ -1,6 +1,9 @@
 import screens.LoaderScreen;
 import com.badlogic.gdx.ApplicationListener;
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.assets.AssetManager;
+import screens.GameScreen;
+import screens.MenuScreen;
 
 /*
  * To change this license header, choose License Headers in Project Properties.
@@ -14,11 +17,26 @@ import com.badlogic.gdx.assets.AssetManager;
  */
 public class Game extends com.badlogic.gdx.Game {   
     static public AssetManager assets;
+    static public void setGameScreen(GameScreen next) {
+        ((Game)Gdx.app.getApplicationListener()).setScreen(new LoaderScreen(next));
+    }
     
     @Override
     public void create() {
+        // create asset manager
+        assets = new AssetManager();
         
-        assets = new AssetManager();        
-        this.setScreen(new LoaderScreen());
+        // prepare startup screen
+        this.setScreen(new LoaderScreen(new MenuScreen()));
+    }
+    @Override
+    public void render() {
+        super.render();
+    }
+    @Override
+    public void dispose() {
+        super.dispose();
+        
+        assets.dispose();
     }
 }
