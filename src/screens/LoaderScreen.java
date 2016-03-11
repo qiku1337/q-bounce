@@ -11,6 +11,7 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import static javafx.scene.text.Font.font;
 import com.badlogic.gdx.graphics.Color;
+import main.Game;
 
 /**
  *
@@ -95,6 +96,7 @@ public class LoaderScreen implements Screen {
         spriteBatch.end();
 
         frame += 1.f*delta;
+        ((Game)Gdx.app.getApplicationListener()).setScreen(this.next);
     }
 
     /**
@@ -137,10 +139,11 @@ public class LoaderScreen implements Screen {
      * Release all unused resources to bypass the memoryleaks.
      */
     @Override
-    public void dispose() {
+    public void dispose() {        
         machineTexture.dispose();
         spriteBatch.dispose();
         font.dispose();
         sound.dispose();
+        System.out.println("Loading screen disposed");
     }
 }

@@ -22,26 +22,24 @@
  * THE SOFTWARE.
  */
 package scene;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 /**
  *
  * @author Qiku
  */
-public abstract class Actor implements Entity {
-    /**
-     * Actor ID on the scene.
-     * Should be unique.
-     */
-    public final int id;
-    
+public abstract class Actor extends Transform implements Entity {
     /**
      * Actor tag.
-     * Use sub-groups instead actor tags for actors fetching by one type.
+     * Group actors type by the tag.
      */
-    public final String tag;
+    private ActorTag tag;
+    
+    /**
+     * Actor ID on the scene.
+     * Should be unique ID.
+     */
+    public final int id;
     
     /**
      * Active actor can be updated and rendered by the actors group.
@@ -59,72 +57,86 @@ public abstract class Actor implements Entity {
      * @param id Unique ID of the actor.
      */
     public Actor(int id) {
-        this(id, "");
+        this(id, null, null);
     }
     
     /**
      * Actor constructor.
      * @param id Unique ID of the actor.
-     * @param tag Tag-up the actor.
+     * @param tag Grouping tag of the actor.
      */
-    public Actor(int id, String tag) {
+    public Actor(int id, ActorTag tag) {
+        this(id, tag, null);
+    }
+    
+    /**
+     * Actor constructor.
+     * @param id Unique ID of the actor.
+     * @param tag Grouping tag of the actor.
+     * @param parent Parent transform to assign with the actor.
+     */
+    public Actor(int id, ActorTag tag, Transform parent) {
+        super(parent);
+        
         this.id = id;
-        this.tag = tag;
+        this.setTag(tag);
     }
     
     /**
-     * Reflect the event by name and parameters type.
-     * Actor events are just methods with the specified type of parameters.
-     * @param name Name of the event (method) to fetch.
-     * @param paramTypes Type of the parameters.
-     * @return Reflected method.
+     * Setter for the actor's tag.
+     * Removes actor reference from the older tag and adds to the new one.
+     * @param newTag New actor tag.
+     * @return Assigned tag with the actor.
      */
-    public Method event(String name, Class<?>... paramTypes) {
-        try {
-            return this.getClass().getMethod(name, paramTypes);
-        }
-        catch(NoSuchMethodException | SecurityException ex) {
-            Logger.getLogger(Actor.class.getName()).log(Level.SEVERE, null, ex);
-        }
-        return null;
-    }
-    
-    /**
-     * Trigger actor event w/o any parameters.
-     * @param event Event name to perform.
-     * @return Event result.
-     */
-    public Object trigger(String event) {
-        try {
-            Method method = this.event(event);
+    public final ActorTag setTag(ActorTag newTag) {
+        if(this.tag != newTag) {
+            // remove actor from old tag
+            if(this.tag != null) {
+                this.tag.actors.removeValue(this, true);
+            }
             
-            if(method != null) {
-                return method.invoke(this);
+            // assign actor with the new tag
+            this.tag = newTag;
+            if(this.tag != null) {
+                this.tag.actors.add(this);
             }
         }
-        catch(IllegalAccessException | IllegalArgumentException | InvocationTargetException ex) {
-            Logger.getLogger(Actor.class.getName()).log(Level.SEVERE, null, ex);
-        }
-        return null;
+        
+        return this.tag;
     }
     
     /**
-     * Trigger actor event with one parameter.
-     * @param event Event name to perform.
-     * @param param1 First parameter to pass.
-     * @return Event result.
+     * Retrieve tag assigned with this actor.
+     * @return The assigned tag.
      */
-    public Object trigger(String event, Object param1) {
-        try {
-            Method method = this.event(event, param1.getClass());
-            
-            if(method != null) {
-                return method.invoke(this, param1);
-            }
-        }
-        catch(IllegalAccessException | IllegalArgumentException | InvocationTargetException ex) {
-            Logger.getLogger(Actor.class.getName()).log(Level.SEVERE, null, ex);
-        }
-        return null;
+    public final ActorTag getTag() {
+        return this.tag;
+    }
+    
+    /**
+     * Render actor coords.
+     * @param gizmos Enabled gizmo.
+     */
+    @Override
+    public void debug(ShapeRenderer gizmos) {
+        gizmos.setTransformMatrix(this.world());
+        gizmos.begin(ShapeRenderer.ShapeType.Line);
+        gizmos.setColor(Color.GRAY);
+        gizmos.circle(0.f, 0.f, 6.f);
+        gizmos.setColor(Color.RED);
+        gizmos.line(0.f, 0.f, 16.f, 0.f);
+        gizmos.setColor(Color.BLUE);
+        gizmos.line(0.f, 0.f, 0.f, 16.f);
+        gizmos.end();
+    }
+    
+    /**
+     * Dispose actor from the scene.
+     * Remove actor from the assigned tag and make orphaned one.
+     */
+    @Override
+    public void dispose() {
+        // untag the actor
+        this.setTag(null);
     }
 }

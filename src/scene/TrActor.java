@@ -22,50 +22,32 @@
  * THE SOFTWARE.
  */
 package scene;
-
 import com.badlogic.gdx.graphics.g2d.Batch;
-import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
-import com.badlogic.gdx.utils.Disposable;
-
+import scene.Actor;
 /**
  *
  * @author Qiku
  */
-public interface Entity extends Disposable {
-    /**
-     * Entity on create event dispatcher.
-     * Performed event on entity creation.
-     * Must be called manually by the entity manager system.
-     */
-    public void create();
+public class TrActor extends Actor {
+    private float frame = 0.f;
     
-    /**
-     * Update the entity by given delta time.
-     * @param delta Delta time between the frames.
-     */
-    public void update(float delta);
-    
-    /**
-     * Render the entity.
-     * @param batch Renderer batching interface provided by the engine.
-     */
-    public void render(Batch batch);
-    
-    /**
-     * Entity on destroy event dispatcher.
-     * Performed event on entity destroy.
-     * Must be called manually by the entity manager system.
-     */
-    public default void destroy() {
-        // dummy method
+    public TrActor(int id) {
+        super(id);
     }
     
-    /**
-     * Render debug information about the entity.
-     * Use it to render debug information such as bboxes or coords.
-     * @param gizmos Shape rendering interface for gizmos.
-     */
-    public default void debug(ShapeRenderer gizmos) {
-        // dummy method
+    @Override
+    public void create() {
+        System.out.println("TrActor (" + String.valueOf(this.id) + ") - create");
+    }
+
+    @Override
+    public void update(float delta) {
+        //this.rotate.setFromAxis(0.f, 0.f, 1.f, 55.f*frame);
+        
+        frame += delta;
+    }
+
+    @Override
+    public void render(Batch batch) {
     }
 }

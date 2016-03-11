@@ -22,50 +22,38 @@
  * THE SOFTWARE.
  */
 package scene;
-
-import com.badlogic.gdx.graphics.g2d.Batch;
-import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
-import com.badlogic.gdx.utils.Disposable;
-
+import com.badlogic.gdx.utils.Array;
+import java.util.Iterator;
 /**
  *
  * @author Qiku
  */
-public interface Entity extends Disposable {
+public class ActorTag implements Iterable<Actor> {
     /**
-     * Entity on create event dispatcher.
-     * Performed event on entity creation.
-     * Must be called manually by the entity manager system.
+     * Tag name.
      */
-    public void create();
+    public final String name;
     
     /**
-     * Update the entity by given delta time.
-     * @param delta Delta time between the frames.
+     * Tagged actors with this tag.
      */
-    public void update(float delta);
+    public final Array<Actor> actors = new Array<>();
     
     /**
-     * Render the entity.
-     * @param batch Renderer batching interface provided by the engine.
+     * Actor tag constructor.
+     * Initializes the actor array set.
+     * @param name Name the tag.
      */
-    public void render(Batch batch);
-    
-    /**
-     * Entity on destroy event dispatcher.
-     * Performed event on entity destroy.
-     * Must be called manually by the entity manager system.
-     */
-    public default void destroy() {
-        // dummy method
+    public ActorTag(String name) {
+        this.name = name;
     }
     
     /**
-     * Render debug information about the entity.
-     * Use it to render debug information such as bboxes or coords.
-     * @param gizmos Shape rendering interface for gizmos.
+     * Iterate through tagged actors.
+     * @return Actors iterator assigned with this tag.
      */
-    public default void debug(ShapeRenderer gizmos) {
-        // dummy method
+    @Override
+    public Iterator<Actor> iterator() {
+        return actors.iterator();
     }
 }
