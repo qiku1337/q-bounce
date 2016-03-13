@@ -27,6 +27,8 @@ import com.badlogic.gdx.graphics.GL20;
 import main.Game;
 import actors.BounceActor;
 import actors.GroundActor;
+import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Input;
 /**
  *
  * @author Qiku
@@ -52,9 +54,12 @@ public class PreviewScreen extends GameScreen{
         // clear target buffer
         gl.glClearColor(0.f, 0.f, 0.f, 1.f);
         gl.glClear(GL20.GL_COLOR_BUFFER_BIT | GL20.GL_DEPTH_BUFFER_BIT);
-        
+
         Game.performSystemsJob(delta);
-        
+        if(BounceActor.kul==true){        
+            
+            Game.world.add(new BounceActor(3));  
+        }
     }
     @Override
     public void resize(int width, int height) {

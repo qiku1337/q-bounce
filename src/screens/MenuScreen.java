@@ -47,9 +47,9 @@ public class MenuScreen extends GameScreen {
         gl.glClearColor(0.2f, 0.3f, 0.5f, 1.f);
         gl.glClear(GL20.GL_COLOR_BUFFER_BIT | GL20.GL_DEPTH_BUFFER_BIT);
         
-        if(fade.update(delta)) {
-            fade.render();
-        }
+       // if(fade.update(delta)) {
+       //     fade.render();
+      //  }
     }
 
     @Override
@@ -70,6 +70,6 @@ public class MenuScreen extends GameScreen {
 
     @Override
     public void dispose() {
-        fade.dispose();
+        //fade.dispose();
     }
 }
