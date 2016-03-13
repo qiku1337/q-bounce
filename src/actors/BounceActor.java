@@ -21,52 +21,38 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package screens;
-import static com.badlogic.gdx.Gdx.gl;
-import com.badlogic.gdx.graphics.GL20;
+package actors;
+import static system.PhysicsWorldSystem.SCALE_FACTOR;
+import com.badlogic.gdx.graphics.g2d.Batch;
+import com.badlogic.gdx.physics.box2d.BodyDef;
+import com.badlogic.gdx.physics.box2d.CircleShape;
 import main.Game;
-import actors.BounceActor;
-import actors.GroundActor;
+import scene.PhysicsActor;
 /**
  *
  * @author Qiku
  */
-public class PreviewScreen extends GameScreen {
-    float frame = 0;
+public class BounceActor extends PhysicsActor {
+        
+    public BounceActor(int id) {
+        super(id, Game.physics.world);
+        
+        this.position.set(405.f, 100.f, 0.f);
+        
+        this.shape = new CircleShape();
+        this.shape.setRadius(32.f * SCALE_FACTOR);
+        this.bodyDef.type = BodyDef.BodyType.DynamicBody;
+        this.fixtureDef.shape = this.shape;
+        this.fixtureDef.density = 2.5f;
+        this.fixtureDef.friction = 0.4f;
+        this.fixtureDef.restitution = 0.6f;
+    }
     
     @Override
-    public void prepare() {
-        //Game.assets.load("assets/steamangel.png", Texture.class);
-    }
-    
-    @Override
-    public void show() {
-       // Game.world.add(new GroundActor(1));
-        Game.world.add(new BounceActor(3));        
-    }
-
-    @Override
-    public void render(float delta) {
-        // clear target buffer
-        gl.glClearColor(0.f, 0.f, 0.f, 1.f);
-        gl.glClear(GL20.GL_COLOR_BUFFER_BIT | GL20.GL_DEPTH_BUFFER_BIT);
-        
-        Game.performSystemsJob(delta);
-        
+    public void create() {
+        super.create();
     }
     @Override
-    public void resize(int width, int height) {
-    }
-    @Override
-    public void hide() {
-    }
-    @Override
-    public void resume() {
-    }
-    @Override
-    public void pause() {
-    }
-    @Override
-    public void dispose() {
+    public void render(Batch batch) {
     }
 }

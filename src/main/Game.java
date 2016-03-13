@@ -3,11 +3,13 @@ import screens.LoaderScreen;
 import com.badlogic.gdx.ApplicationListener;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.assets.AssetManager;
+import com.badlogic.gdx.graphics.Camera;
 import screens.GameScreen;
 import screens.MenuScreen;
 import screens.PreviewScreen;
-import systems.SceneRendererSystem;
-import systems.SceneWorldSystem;
+import system.SceneRendererSystem;
+import system.SceneWorldSystem;
+import system.PhysicsWorldSystem;
 
 /*
  * To change this license header, choose License Headers in Project Properties.
@@ -25,7 +27,13 @@ public class Game extends com.badlogic.gdx.Game {
      * Manage game resources such as textures, sounds, musics etc. globally.
      */
     static public AssetManager assets;
+    static public Camera mainCamera;
     
+     /**
+     * Physics world system.
+     * Simulates physics world.
+     */
+    static public PhysicsWorldSystem physics;
     /**
      * Scene world system.
      */
@@ -44,6 +52,17 @@ public class Game extends com.badlogic.gdx.Game {
     static public void setGameScreen(GameScreen next) {
         ((Game)Gdx.app.getApplicationListener()).setScreen(new LoaderScreen(next));
     }
+    static public void performSystemsJob(float delta) {
+        // update frame
+        Game.physics.update(delta);
+        Game.world.update(delta);
+        
+        // render frame
+        Game.renderer.prerender();
+        Game.renderer.render();
+        Game.renderer.debug();
+        Game.physics.debug();
+    }
     
     /**
      * Performed after application succeed creation.
@@ -57,6 +76,10 @@ public class Game extends com.badlogic.gdx.Game {
         // create scene systems
         world = new SceneWorldSystem();
         renderer = new SceneRendererSystem(world.root);
+        physics = new PhysicsWorldSystem();
+        
+        // fetch for main camera
+        mainCamera = renderer.camera;
         
         // prepare startup screen
         //this.setScreen();

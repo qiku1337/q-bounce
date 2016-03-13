@@ -21,32 +21,33 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package scene;
+package actors;
+import static system.PhysicsWorldSystem.SCALE_FACTOR;
 import com.badlogic.gdx.graphics.g2d.Batch;
-import scene.Actor;
+import com.badlogic.gdx.physics.box2d.BodyDef;
+import com.badlogic.gdx.physics.box2d.CircleShape;
+import com.badlogic.gdx.physics.box2d.EdgeShape;
+import main.Game;
+import scene.PhysicsActor;
 /**
  *
  * @author Qiku
  */
-public class TrActor extends Actor {
-    private float frame = 0.f;
-    
-    public TrActor(int id) {
-        super(id);
-    }
-    
-    @Override
-    public void create() {
-        System.out.println("TrActor (" + String.valueOf(this.id) + ") - create");
-    }
-
-    @Override
-    public void update(float delta) {
-        //this.rotate.setFromAxis(0.f, 0.f, 1.f, 55.f*frame);
+public class GroundActor extends PhysicsActor {
+    public GroundActor(int id) {
+        super(id, Game.physics.world);
         
-        frame += delta;
+        this.position.set(400.f, 400.f, 0.f);
+        
+        this.shape = new EdgeShape();
+        this.shape.setRadius(32.f * SCALE_FACTOR);
+        this.bodyDef.type = BodyDef.BodyType.StaticBody;
+        this.fixtureDef.shape = this.shape;
+        this.fixtureDef.density = 0.5f;
+        this.fixtureDef.friction = 0.4f;
+        this.fixtureDef.restitution = 0.6f;
     }
-
+    
     @Override
     public void render(Batch batch) {
     }
