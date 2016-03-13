@@ -22,31 +22,32 @@
  * THE SOFTWARE.
  */
 package actors;
-import static system.PhysicsWorldSystem.SCALE_FACTOR;
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.physics.box2d.BodyDef;
 import com.badlogic.gdx.physics.box2d.CircleShape;
-import com.badlogic.gdx.physics.box2d.EdgeShape;
+import com.badlogic.gdx.physics.box2d.PolygonShape;
 import main.Game;
 import scene.PhysicsActor;
+import static system.PhysicsWorldSystem.SCALE_FACTOR;
 /**
  *
  * @author Qiku
  */
 public class GroundActor extends PhysicsActor {
-    public GroundActor(int id) {
+    public GroundActor(int id, float x, float y) {
         super(id, Game.physics.world);
         
-        this.position.set(400.f, 400.f, 0.f);
+        this.position.set(x, y, 0.f);
         
-        this.shape = new EdgeShape();
+        this.shape = new CircleShape();
         this.shape.setRadius(32.f * SCALE_FACTOR);
         this.bodyDef.type = BodyDef.BodyType.StaticBody;
         this.fixtureDef.shape = this.shape;
-        this.fixtureDef.density = 0.5f;
+        this.fixtureDef.density = 2.5f;
         this.fixtureDef.friction = 0.4f;
         this.fixtureDef.restitution = 0.6f;
     }
+
     
     @Override
     public void render(Batch batch) {

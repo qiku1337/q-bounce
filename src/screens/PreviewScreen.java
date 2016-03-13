@@ -31,7 +31,7 @@ import actors.GroundActor;
  *
  * @author Qiku
  */
-public class PreviewScreen extends GameScreen {
+public class PreviewScreen extends GameScreen{
     float frame = 0;
     
     @Override
@@ -41,7 +41,9 @@ public class PreviewScreen extends GameScreen {
     
     @Override
     public void show() {
-       // Game.world.add(new GroundActor(1));
+        Game.world.add(new GroundActor(1,100,250)); 
+        Game.world.add(new GroundActor(1,250,350)); 
+        Game.world.add(new GroundActor(1,140,350)); 
         Game.world.add(new BounceActor(3));        
     }
 

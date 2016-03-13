@@ -116,7 +116,7 @@ public abstract class Actor extends Transform implements Entity {
     /**
      * Render actor coords.
      * @param gizmos Enabled gizmo.
-     */
+     *
     @Override
     public void debug(ShapeRenderer gizmos) {
         gizmos.setTransformMatrix(this.world());
@@ -130,7 +130,7 @@ public abstract class Actor extends Transform implements Entity {
         gizmos.end();
     }
     
-    /**
+    **
      * Dispose actor from the scene.
      * Remove actor from the assigned tag and make orphaned one.
      */

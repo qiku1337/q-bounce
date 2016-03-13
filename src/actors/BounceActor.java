@@ -37,7 +37,7 @@ public class BounceActor extends PhysicsActor {
     public BounceActor(int id) {
         super(id, Game.physics.world);
         
-        this.position.set(405.f, 100.f, 0.f);
+        this.position.set(105.f, 100.f, 0.f);
         
         this.shape = new CircleShape();
         this.shape.setRadius(32.f * SCALE_FACTOR);
