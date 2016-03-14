@@ -69,7 +69,7 @@ public class LoaderScreen implements Screen {
         animation = new Animation(0.04f, ballguy);      
         spriteBatch = new SpriteBatch(); 
         
-        sound = Gdx.audio.newSound(Gdx.files.internal("assets/menuloop.wav"));
+        sound = Gdx.audio.newSound(Gdx.files.internal("assets/sound/menuloop.wav"));
         long idsound = sound.play(1.0f);        
         sound.setLooping(idsound, true);
         

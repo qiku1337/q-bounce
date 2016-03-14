@@ -77,6 +77,8 @@ public class BounceActor extends Actor {
     
     private Sound sound;
     
+    private boolean allowjump=false;
+    
     Vector2 vel;
     
     public BounceActor(int id) {
@@ -93,7 +95,7 @@ public class BounceActor extends Actor {
 		bodyDef.position.set((float)Math.random()*1.f, (float)Math.random()*1.f);
 		body = Game.physics.world.createBody(bodyDef);
 		fixture = body.createFixture(shape, 2.f);
-                fixture.setRestitution(.1f);
+                //fixture.setRestitution(.1f);
 		fixture.setFriction(.4f);
                 fixture.setDensity(1.5f);
                 fixture.setUserData(this);
@@ -129,15 +131,16 @@ public class BounceActor extends Actor {
                 jump();
             }            
             if(Gdx.input.isKeyPressed(Input.Keys.RIGHT)) {
-                frame += body.getLinearVelocity().len()*delta;
+                //frame += body.getLinearVelocity().len()*delta;
                 if(body.getLinearVelocity().len()<2.f) 
                     moveright();
             }
             if(Gdx.input.isKeyPressed(Input.Keys.LEFT)) {
-                frame += body.getLinearVelocity().len()*delta;
+                //frame += body.getLinearVelocity().len()*delta;
                 if(body.getLinearVelocity().len()<2.f) 
                 moveleft();
             }
+            frame += delta;
             DebugScreenActor.info.append("bounce anim frame: ");
             DebugScreenActor.info.append(frame*10);
             DebugScreenActor.info.append("\n");
@@ -156,7 +159,12 @@ public class BounceActor extends Actor {
         Game.physics.world.destroyBody(body);       
     }
     public void jump() {
+        if(allowjump){
 		body.applyForceToCenter(0.f, 20.f, true);
+                sound = Gdx.audio.newSound(Gdx.files.internal("assets/sound/jumpland.mp3"));
+                long idsound = sound.play(1.0f);
+                allowjump=false;
+        }
     }
     public void moveright() {
 		body.applyForceToCenter(1.5f, 0f, true);
@@ -176,7 +184,8 @@ public class BounceActor extends Actor {
     @Override
     public void onHit(Actor actor, Contact contact) {
 	if(actor instanceof GroundActor) {
-          //  sound = Gdx.audio.newSound(Gdx.files.internal("assets/coin.aif"));
+            allowjump=true;
+            sound = Gdx.audio.newSound(Gdx.files.internal("assets/sound/jumpland.mp3"));
             long idsound = sound.play(1.0f);        
             //sound.setLooping(idsound, true);
 	}
