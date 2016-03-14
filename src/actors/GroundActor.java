@@ -22,34 +22,35 @@
  * THE SOFTWARE.
  */
 package actors;
-import com.badlogic.gdx.graphics.g2d.Batch;
+import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.BodyDef;
-import com.badlogic.gdx.physics.box2d.CircleShape;
+import com.badlogic.gdx.physics.box2d.Fixture;
 import com.badlogic.gdx.physics.box2d.PolygonShape;
 import main.Game;
-import scene.PhysicsActor;
-import static system.PhysicsWorldSystem.SCALE_FACTOR;
+import scene.Actor;
+import system.Physics;
 /**
  *
  * @author Qiku
  */
-public class GroundActor extends PhysicsActor {
-    public GroundActor(int id, float x, float y) {
-        super(id, Game.physics.world);
-        
-        this.position.set(x, y, 0.f);
-        
-        this.shape = new CircleShape();
-        this.shape.setRadius(32.f * SCALE_FACTOR);
-        this.bodyDef.type = BodyDef.BodyType.StaticBody;
-        this.fixtureDef.shape = this.shape;
-        this.fixtureDef.density = 2.5f;
-        this.fixtureDef.friction = 0.4f;
-        this.fixtureDef.restitution = 0.6f;
-    }
-
-    
-    @Override
-    public void render(Batch batch) {
-    }
+public class GroundActor extends Actor {
+	private Body body;
+	private Fixture fixture;
+	
+	public GroundActor(int id) {
+		super(id);
+		
+		// shape
+		PolygonShape shape = new PolygonShape();
+		shape.setAsBox(580.f * Physics.SCALE, 15.f * Physics.SCALE);
+		
+		// body
+		BodyDef bodyDef = new BodyDef();
+		bodyDef.type = BodyDef.BodyType.StaticBody;
+                bodyDef.position.set(1.f,-2.f);
+		body = Game.physics.world.createBody(bodyDef);
+		fixture = body.createFixture(shape, 2.f);
+		
+		shape.dispose();
+	}
 }

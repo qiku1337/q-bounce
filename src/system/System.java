@@ -21,53 +21,22 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package screens;
-import com.badlogic.gdx.ApplicationListener;
-import com.badlogic.gdx.Screen;
-import main.Game;
-
+package system;
+import com.badlogic.gdx.utils.Disposable;
 /**
- * Base game screen.
- * Provides `prepare` method to be performed by the loader screen.
- * @author Konrad Nowakowski https://github.com/konrad92
+ *
+ * @author Qiku
  */
-public interface GameScreen extends Screen {
-    /**
-     * Prepare the game screen on the load process.
-     * Used to fillup the game assets loader.
-     */
-    public void prepare();
-    
+public interface System extends Disposable {
 	/**
-	 * @see ApplicationListener#resize(int, int)
+	 * System perform action.
 	 */
-    @Override
-	public default void resize(int width, int height) {
-        // dummy method
-    }
-
-	/**
-	 * @see ApplicationListener#pause()
-	 */
-    @Override
-	public default void pause() {
-        // dummy method
-    }
-
-	/** 
-	 * @see ApplicationListener#resume()
-	 */
-    @Override
-	public default void resume() {
-        // dummy method
-    }
+	public void perform();
 	
 	/**
-	 * Clear the scene on screen hiding.
-	 * @see Screen#hide() 
+	 * Post system performing action.
 	 */
-	@Override
-	public default void hide() {
-		Game.scene.clear();
+	public default void postPerform() {
+		// dummy method
 	}
 }

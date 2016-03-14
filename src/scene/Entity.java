@@ -23,49 +23,61 @@
  */
 package scene;
 
-import com.badlogic.gdx.graphics.g2d.Batch;
+import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.utils.Disposable;
-
 /**
  *
  * @author Qiku
  */
 public interface Entity extends Disposable {
-    /**
-     * Entity on create event dispatcher.
-     * Performed event on entity creation.
-     * Must be called manually by the entity manager system.
-     */
-    public void create();
-    
-    /**
-     * Update the entity by given delta time.
-     * @param delta Delta time between the frames.
-     */
-    public void update(float delta);
-    
-    /**
-     * Render the entity.
-     * @param batch Renderer batching interface provided by the engine.
-     */
-    public void render(Batch batch);
-    
-    /**
-     * Entity on destroy event dispatcher.
-     * Performed event on entity destroy.
-     * Must be called manually by the entity manager system.
-     */
-    public default void destroy() {
-        // dummy method
-    }
-    
-    /**
-     * Render debug information about the entity.
-     * Use it to render debug information such as bboxes or coords.
-     * @param gizmos Shape rendering interface for gizmos.
-     */
-    public default void debug(ShapeRenderer gizmos) {
-        // dummy method
-    }
+	/**
+	 * Create method performed when the entity were created from the scene.
+	 */
+	public default void create() {
+		// dummy method
+	}
+	
+	/**
+	 * Destroy method performed when the entity were disposed from the scene.
+	 */
+	public default boolean destroy() {
+		// dummy method
+		return true;
+	}
+	
+	/**
+	 * Entity update method.
+	 * @param delta Delta time for smoother update performing.
+	 */
+	public default void update(float delta) {
+		// dummy method
+	}
+	
+	/**
+	 * Entity drawing method.
+	 * @param batch Sprite batch for instance draw performing.
+	 */
+	public default void draw(SpriteBatch batch) {
+		// dummy method
+	}
+	
+	/**
+	 * Debugging information rendering.
+	 * @param gizmo 
+	 */
+	public default void debug(ShapeRenderer gizmo) {
+		// dummy method
+		gizmo.begin(ShapeRenderer.ShapeType.Line);
+		gizmo.rect(-2.f, -2.f, 4.f, 4.f);
+		gizmo.end();
+	}
+	
+	/**
+	 * @see Disposable#dispose() 
+	 */
+	@Override
+	public default void dispose() {
+		// dummy method
+	}
 }

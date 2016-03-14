@@ -22,58 +22,53 @@
  * THE SOFTWARE.
  */
 package screens;
+import actors.BounceActor;
+import actors.DebugScreenActor;
+import actors.GroundActor;
 import static com.badlogic.gdx.Gdx.gl;
 import com.badlogic.gdx.graphics.GL20;
+import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.physics.box2d.Body;
+import com.badlogic.gdx.physics.box2d.Fixture;
 import main.Game;
-import actors.BounceActor;
-import actors.GroundActor;
-import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.Input;
 /**
  *
  * @author Qiku
  */
-public class PreviewScreen extends GameScreen{
-    float frame = 0;
-    
-    @Override
-    public void prepare() {
-        //Game.assets.load("assets/steamangel.png", Texture.class);
-    }
-    
-    @Override
-    public void show() {
-        Game.world.add(new GroundActor(1,100,250)); 
-        Game.world.add(new GroundActor(1,250,350)); 
-        Game.world.add(new GroundActor(1,140,350)); 
-        Game.world.add(new BounceActor(3));        
-    }
+public class StageScreen implements GameScreen {
+	Body body;
+	Fixture fixture;
+	
+	@Override
+	public void prepare() {
+		//Game.assets.load("assets/dragonball.png", Texture.class);
+                BounceActor.preload();
+	}
 
-    @Override
-    public void render(float delta) {
+	@Override
+	public void show() {
+		// prepare scene camera
+		Game.mainCamera.setToOrtho(false);
+		Game.mainCamera.translate(-400.f, -300.f);
+		Game.mainCamera.update();
+		
+		// create turret actor
+		Game.scene.DEBUG.add(new DebugScreenActor());
+		Game.scene.ACTION_1.add(new BounceActor(0));
+                Game.scene.ACTION_1.add(new GroundActor(0));
+	}
+
+	@Override
+	public void render(float delta) {
         // clear target buffer
-        gl.glClearColor(0.f, 0.f, 0.f, 1.f);
+        gl.glClearColor(0.f, 0.f, 0.f, 0.f);
         gl.glClear(GL20.GL_COLOR_BUFFER_BIT | GL20.GL_DEPTH_BUFFER_BIT);
+		
+		// perform game systems
+		Game.performSystems();
+	}
 
-        Game.performSystemsJob(delta);
-        if(BounceActor.kul==true){        
-            
-            Game.world.add(new BounceActor(3));  
-        }
-    }
-    @Override
-    public void resize(int width, int height) {
-    }
-    @Override
-    public void hide() {
-    }
-    @Override
-    public void resume() {
-    }
-    @Override
-    public void pause() {
-    }
-    @Override
-    public void dispose() {
-    }
+	@Override
+	public void dispose() {
+	}
 }

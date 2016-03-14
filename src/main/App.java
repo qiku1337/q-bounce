@@ -31,6 +31,6 @@ public class App {
         cfg.y = -1;
          
          // create and run application listeners
-        LwjglApplication app = new LwjglApplication(new Game(), cfg);
+        LwjglApplication app = new LwjglApplication(Game.app, cfg);
     }
 }

@@ -24,35 +24,84 @@
 package actors;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
-import static system.PhysicsWorldSystem.SCALE_FACTOR;
-import com.badlogic.gdx.graphics.g2d.Batch;
+import com.badlogic.gdx.graphics.GL20;
+import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.Animation;
+import com.badlogic.gdx.graphics.g2d.BitmapFont;
+import com.badlogic.gdx.graphics.g2d.Sprite;
+import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.BodyDef;
-import com.badlogic.gdx.physics.box2d.CircleShape;
+import com.badlogic.gdx.physics.box2d.Fixture;
+import com.badlogic.gdx.physics.box2d.PolygonShape;
 import main.Game;
-import scene.PhysicsActor;
+import scene.Actor;
+import system.Physics;
 /**
  *
  * @author Qiku
  */
-public class BounceActor extends PhysicsActor {
-    public static boolean createkul;
+public class BounceActor extends Actor {
+    private final Body body;
+    private final Fixture fixture;
+    //protected Fixture fixture;
+    private Sprite binspr;
+    //private float velocity;
+    private float speed;
     public static boolean kul=false;
+    private SpriteBatch spriteBatch;
     
-    Vector2 force = Vector2.Y.rotate(180).scl(1000.f);
+    private Animation animation;    
+
+    private Texture machineTexture;
+    
+    private TextureRegion[] ballguy;
+    
+    private TextureRegion currentFrame;
+    
+    private BitmapFont font;
+    
+    private static final int        FRAME_COLS = 28;
+    
+    private static final int        FRAME_ROWS = 1; 
+    
+    private float frame = 0.f;
+    
+    Vector2 vel;
     
     public BounceActor(int id) {
-        super(id, Game.physics.world);
-        
-        this.position.set(105.f, 100.f, 0.f);
-        
-        this.shape = new CircleShape();
-        this.shape.setRadius(32.f * SCALE_FACTOR);
-        this.bodyDef.type = BodyDef.BodyType.DynamicBody;
-        this.fixtureDef.shape = this.shape;
-        this.fixtureDef.density = 2.5f;
-        this.fixtureDef.friction = 0.4f;
-        this.fixtureDef.restitution = 0.6f;       
+		super(id);
+		
+		// body shape
+		PolygonShape shape = new PolygonShape();
+		shape.setAsBox(10.f * Physics.SCALE, 10.f * Physics.SCALE);
+		
+		// create physics body
+		BodyDef bodyDef = new BodyDef();
+		bodyDef.type = BodyDef.BodyType.DynamicBody;
+                
+		bodyDef.position.set((float)Math.random()*1.f, (float)Math.random()*1.f);
+		body = Game.physics.world.createBody(bodyDef);
+		fixture = body.createFixture(shape, 2.f);
+                fixture.setRestitution(.1f);
+		fixture.setFriction(.4f);
+                fixture.setDensity(1.5f);
+ 
+                shape.dispose();
+                
+        machineTexture = new Texture(Gdx.files.internal("assets/ballguy.png"));        
+        TextureRegion[][] tmp = TextureRegion.split(machineTexture, machineTexture.getWidth()/FRAME_COLS, machineTexture.getHeight()/FRAME_ROWS);              // #10
+        ballguy = new TextureRegion[FRAME_COLS * FRAME_ROWS];        
+        int index = 0;
+        for (int i = 0; i < FRAME_ROWS; i++) {
+            for (int j = 0; j < FRAME_COLS; j++) {
+                ballguy[index++] = tmp[i][j];
+            }
+        }
+        animation = new Animation(0.04f, ballguy);      
+        spriteBatch = new SpriteBatch(); 	  
     }
     
     @Override
@@ -64,27 +113,52 @@ public class BounceActor extends PhysicsActor {
     @Override
     public void update(float delta){
             if(Gdx.input.isKeyJustPressed(Input.Keys.SPACE)) {				
-		System.out.println("Space pressed");  
-                
-                kul=true;
-            }else{
-                kul=false;
+                        Game.scene.ACTION_2.add(new BounceActor(id));
+			//this.remove();
             }
             if(Gdx.input.isKeyJustPressed(Input.Keys.UP)) {
-                System.out.println("UP pressed"); 
-                jump(force);
-            }                   
-    }
-
-    @Override
-    public void render(Batch batch) {
-    }   
+                jump();
+            }            
+            if(Gdx.input.isKeyPressed(Input.Keys.RIGHT)) {
+                frame += body.getLinearVelocity().len()*delta;
+                if(body.getLinearVelocity().len()<2.f) 
+                    moveright();
+            }
+            if(Gdx.input.isKeyPressed(Input.Keys.LEFT)) {
+                frame += body.getLinearVelocity().len()*delta;
+                if(body.getLinearVelocity().len()<2.f) 
+                moveleft();
+            }
+        Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT | GL20.GL_DEPTH_BUFFER_BIT);                        // #14
+                
+        currentFrame = animation.getKeyFrame(frame, true);  
+        spriteBatch.begin();        
+        spriteBatch.draw(currentFrame,                                 
+                380.f+getX()*100.f, 
+                290.f+getY()*100.f,                       //miejsce rysowania
+                Gdx.graphics.getWidth()/20.f,Gdx.graphics.getHeight()/10.f);  //wielkosc  
+        spriteBatch.end();        
+    }  
     @Override
     public void dispose(){
         Game.physics.world.destroyBody(body);
     }
-    public void jump(Vector2 newForce) {
-		//body.setTransform(body.getPosition(), (float)(Math.random()*Math.PI*2));
-		body.applyForceToCenter(newForce, true);
-    }        
+    public void jump() {
+		body.applyForceToCenter(0.f, 20.f, true);
+    }
+    public void moveright() {
+		body.applyForceToCenter(1.5f, 0f, true);
+                
+    }
+    public void moveleft() {
+		body.applyForceToCenter(-1.5f, 0f, true);                
+    }
+    public float getY() {
+                return body.getPosition().y;
+    }
+    public float getX() {
+                System.out.println(body.getPosition().x);
+                return body.getPosition().x;
+                
+    }
 }

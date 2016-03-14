@@ -31,7 +31,7 @@ import static com.badlogic.gdx.math.Interpolation.fade;
  *
  * @author Qiku
  */
-public class MenuScreen extends GameScreen {    
+public class MenuScreen implements GameScreen {    
     
     @Override
     public void prepare() {

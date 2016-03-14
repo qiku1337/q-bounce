@@ -21,53 +21,54 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package screens;
-import com.badlogic.gdx.ApplicationListener;
-import com.badlogic.gdx.Screen;
+package actors;
+import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.graphics.g2d.BitmapFont;
+import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.math.Matrix4;
 import main.Game;
-
+import scene.Actor;
 /**
- * Base game screen.
- * Provides `prepare` method to be performed by the loader screen.
- * @author Konrad Nowakowski https://github.com/konrad92
+ *
+ * @author Qiku
  */
-public interface GameScreen extends Screen {
-    /**
-     * Prepare the game screen on the load process.
-     * Used to fillup the game assets loader.
-     */
-    public void prepare();
-    
+public class DebugScreenActor extends Actor {
 	/**
-	 * @see ApplicationListener#resize(int, int)
+	 * Debug information builder.
 	 */
-    @Override
-	public default void resize(int width, int height) {
-        // dummy method
-    }
-
-	/**
-	 * @see ApplicationListener#pause()
-	 */
-    @Override
-	public default void pause() {
-        // dummy method
-    }
-
-	/** 
-	 * @see ApplicationListener#resume()
-	 */
-    @Override
-	public default void resume() {
-        // dummy method
-    }
+	public static final StringBuilder info = new StringBuilder();
 	
 	/**
-	 * Clear the scene on screen hiding.
-	 * @see Screen#hide() 
+	 * Font used to render the bitmap.
+	 */
+	private final BitmapFont font;
+	
+	/**
+	 * Ctor.
+	 */
+	public DebugScreenActor() {
+		super(0, 0);
+		
+		this.font = new BitmapFont();
+	}
+	
+	/**
+	 * Draw layer debug information such as actors each layer.
+	 * @see Actor#draw(com.badlogic.gdx.graphics.g2d.SpriteBatch) 
+	 * @param batch 
 	 */
 	@Override
-	public default void hide() {
-		Game.scene.clear();
+	public void draw(SpriteBatch batch) {
+		
+		String fps = "FPS: " + Gdx.graphics.getFramesPerSecond() + "\n";
+                
+		
+		batch.begin();
+		batch.setProjectionMatrix(new Matrix4().setToOrtho2D(0.f, 0.f, 800.f, 600.f));
+		font.drawMultiLine(batch, fps + info.toString(), 5.f, 595.f);
+		batch.end();
+		
+		// clear up debug information
+		info.setLength(0);
 	}
 }
