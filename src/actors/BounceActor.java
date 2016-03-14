@@ -24,6 +24,7 @@
 package actors;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
+import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Animation;
@@ -36,6 +37,7 @@ import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.BodyDef;
 import com.badlogic.gdx.physics.box2d.Fixture;
 import com.badlogic.gdx.physics.box2d.PolygonShape;
+import com.badlogic.gdx.physics.box2d.Contact;
 import main.Game;
 import scene.Actor;
 import system.Physics;
@@ -44,13 +46,17 @@ import system.Physics;
  * @author Qiku
  */
 public class BounceActor extends Actor {
+    
     private final Body body;
+    
     private final Fixture fixture;
     //protected Fixture fixture;
     private Sprite binspr;
     //private float velocity;
     private float speed;
+    
     public static boolean kul=false;
+    
     private SpriteBatch spriteBatch;
     
     private Animation animation;    
@@ -68,6 +74,8 @@ public class BounceActor extends Actor {
     private static final int        FRAME_ROWS = 1; 
     
     private float frame = 0.f;
+    
+    private Sound sound;
     
     Vector2 vel;
     
@@ -88,6 +96,7 @@ public class BounceActor extends Actor {
                 fixture.setRestitution(.1f);
 		fixture.setFriction(.4f);
                 fixture.setDensity(1.5f);
+                fixture.setUserData(this);
  
                 shape.dispose();
                 
@@ -100,7 +109,7 @@ public class BounceActor extends Actor {
                 ballguy[index++] = tmp[i][j];
             }
         }
-        animation = new Animation(0.04f, ballguy);      
+        animation = new Animation(0.03f, ballguy);      
         spriteBatch = new SpriteBatch(); 	  
     }
     
@@ -112,9 +121,9 @@ public class BounceActor extends Actor {
     }
     @Override
     public void update(float delta){
-            if(Gdx.input.isKeyJustPressed(Input.Keys.SPACE)) {				
+            if(Gdx.input.isKeyJustPressed(Input.Keys.R)) {                        
                         Game.scene.ACTION_2.add(new BounceActor(id));
-			//this.remove();
+			this.remove();
             }
             if(Gdx.input.isKeyJustPressed(Input.Keys.UP)) {
                 jump();
@@ -129,6 +138,9 @@ public class BounceActor extends Actor {
                 if(body.getLinearVelocity().len()<2.f) 
                 moveleft();
             }
+            DebugScreenActor.info.append("bounce anim frame: ");
+            DebugScreenActor.info.append(frame*10);
+            DebugScreenActor.info.append("\n");
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT | GL20.GL_DEPTH_BUFFER_BIT);                        // #14
                 
         currentFrame = animation.getKeyFrame(frame, true);  
@@ -138,10 +150,10 @@ public class BounceActor extends Actor {
                 290.f+getY()*100.f,                       //miejsce rysowania
                 Gdx.graphics.getWidth()/20.f,Gdx.graphics.getHeight()/10.f);  //wielkosc  
         spriteBatch.end();        
-    }  
+    }
     @Override
     public void dispose(){
-        Game.physics.world.destroyBody(body);
+        Game.physics.world.destroyBody(body);       
     }
     public void jump() {
 		body.applyForceToCenter(0.f, 20.f, true);
@@ -160,5 +172,13 @@ public class BounceActor extends Actor {
                 System.out.println(body.getPosition().x);
                 return body.getPosition().x;
                 
+    }
+    @Override
+    public void onHit(Actor actor, Contact contact) {
+	if(actor instanceof GroundActor) {
+          //  sound = Gdx.audio.newSound(Gdx.files.internal("assets/coin.aif"));
+            long idsound = sound.play(1.0f);        
+            //sound.setLooping(idsound, true);
+	}
     }
 }

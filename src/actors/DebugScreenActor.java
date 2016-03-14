@@ -59,13 +59,22 @@ public class DebugScreenActor extends Actor {
 	 */
 	@Override
 	public void draw(SpriteBatch batch) {
-		
 		String fps = "FPS: " + Gdx.graphics.getFramesPerSecond() + "\n";
-                
+		
+		if(Game.DEBUG_INFO || Game.DEBUG_ADDITIONAL) {
+			info.append("Layer debug info");
+                        /*			info.append("\nACTION_1: ");
+                        info.append(Game.scene.ACTION_1.actors.size);
+                        info.append("\nACTION_2: ");
+                        info.append(Game.scene.ACTION_2.actors.size);
+                        info.append("\nACTION_3: ");
+                        info.append(Game.scene.ACTION_3.actors.size);*/
+		}
 		
 		batch.begin();
 		batch.setProjectionMatrix(new Matrix4().setToOrtho2D(0.f, 0.f, 800.f, 600.f));
-		font.drawMultiLine(batch, fps + info.toString(), 5.f, 595.f);
+		font.drawMultiLine(batch, Game.DEBUG_INFO || Game.DEBUG_ADDITIONAL ?
+			fps + info.toString() : fps, 5.f, 595.f);
 		batch.end();
 		
 		// clear up debug information

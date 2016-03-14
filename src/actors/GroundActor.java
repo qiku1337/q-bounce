@@ -34,15 +34,15 @@ import system.Physics;
  * @author Qiku
  */
 public class GroundActor extends Actor {
-	private Body body;
-	private Fixture fixture;
+	private final Body body;
+	private final Fixture fixture;
 	
 	public GroundActor(int id) {
 		super(id);
 		
 		// shape
 		PolygonShape shape = new PolygonShape();
-		shape.setAsBox(580.f * Physics.SCALE, 15.f * Physics.SCALE);
+		shape.setAsBox(1000.f * Physics.SCALE, 15.f * Physics.SCALE);
 		
 		// body
 		BodyDef bodyDef = new BodyDef();
@@ -50,7 +50,7 @@ public class GroundActor extends Actor {
                 bodyDef.position.set(1.f,-2.f);
 		body = Game.physics.world.createBody(bodyDef);
 		fixture = body.createFixture(shape, 2.f);
-		
+		fixture.setUserData(this);
 		shape.dispose();
 	}
 }

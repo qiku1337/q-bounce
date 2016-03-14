@@ -27,14 +27,19 @@ import com.badlogic.gdx.math.Matrix4;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Box2D;
 import com.badlogic.gdx.physics.box2d.Box2DDebugRenderer;
+import com.badlogic.gdx.physics.box2d.Contact;
+import com.badlogic.gdx.physics.box2d.ContactImpulse;
+import com.badlogic.gdx.physics.box2d.ContactListener;
+import com.badlogic.gdx.physics.box2d.Manifold;
 import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.utils.Disposable;
 import main.Game;
+import scene.Actor;
 /**
  *
  * @author Qiku
  */
-public class Physics implements System {
+public class Physics implements System, ContactListener {
 	/**
 	 * Sceen to world scale.
 	 */
@@ -72,10 +77,10 @@ public class Physics implements System {
 	 */
 	public Physics() {
 		this.world = new World(new Vector2(0.f, -10.f), true);
+		this.debugRenderer = new Box2DDebugRenderer(true, true, false, true, true, true);
 		
-		if(Game.DEBUG) {
-			this.debugRenderer = new Box2DDebugRenderer(true, true, true, true, true, true);
-		}
+		// apply contact listener
+		this.world.setContactListener(this);
 	}
 	
 	/**
@@ -97,10 +102,10 @@ public class Physics implements System {
 	 */
 	@Override
 	public void postPerform() {
-		if(Game.DEBUG) {
+		if(Game.DEBUG_INFO) {
 			// scale `world to screen`
 			Matrix4 projMatrix = Game.mainCamera.combined.cpy();
-			projMatrix.mul(new Matrix4().scl(SCALE_INV));
+			projMatrix.scl(SCALE_INV);
 			
 			// perform debug rendering
 			this.debugRenderer.render(this.world, projMatrix);
@@ -112,10 +117,64 @@ public class Physics implements System {
 	 */
 	@Override
 	public void dispose() {
-		if(Game.DEBUG) {
+		if(Game.DEBUG_INFO) {
 			this.debugRenderer.dispose();
 		}
 		
 		this.world.dispose();
+	}
+
+	/**
+	 * @see ContactListener#beginContact(com.badlogic.gdx.physics.box2d.Contact) 
+	 * @param contact 
+	 */
+	@Override
+	public void beginContact(Contact contact) {
+		Object c1 = contact.getFixtureA().getUserData();
+		Object c2 = contact.getFixtureB().getUserData();
+		
+		// fixture A
+		if(c1 instanceof Actor) {
+			if(c2 instanceof Actor) {
+				((Actor)c1).onHit((Actor)c2, contact);
+			} else {
+				((Actor)c1).onHit(null, contact);
+			}
+		}
+		
+		// fixture B
+		if(c2 instanceof Actor) {
+			if(c1 instanceof Actor) {
+				((Actor)c2).onHit((Actor)c1, contact);
+			} else {
+				((Actor)c2).onHit(null, contact);
+			}
+		}
+	}
+
+	/**
+	 * @see ContactListener#endContact(com.badlogic.gdx.physics.box2d.Contact) 
+	 * @param contact 
+	 */
+	@Override
+	public void endContact(Contact contact) {
+	}
+
+	/**
+	 * @see ContactListener#preSolve(com.badlogic.gdx.physics.box2d.Contact, com.badlogic.gdx.physics.box2d.Manifold) 
+	 * @param contact
+	 * @param oldManifold 
+	 */
+	@Override
+	public void preSolve(Contact contact, Manifold oldManifold) {
+	}
+
+	/**
+	 * @see ContactListener#postSolve(com.badlogic.gdx.physics.box2d.Contact, com.badlogic.gdx.physics.box2d.ContactImpulse) 
+	 * @param contact
+	 * @param impulse 
+	 */
+	@Override
+	public void postSolve(Contact contact, ContactImpulse impulse) {
 	}
 }
