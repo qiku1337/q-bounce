@@ -161,16 +161,17 @@ public class BounceActor extends Actor {
         x=getX();        
         y=getY();       
         frame += delta;
+        //Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT | GL20.GL_DEPTH_BUFFER_BIT);
     }
     @Override
     public void draw(SpriteBatch batch) {                        
              
         currentFrame = animation.getKeyFrame(frame, true);  
         batch.begin();        
-        batch.setProjectionMatrix(Game.mainCamera.projection);
+        
         batch.draw(currentFrame,                                 
-                getX()-20, 
-                getY()-70,                       //miejsce rysowania
+                -20.f+getX()*100.f, 
+                -20.f+getY()*100.f,                     //miejsce rysowania
                 Gdx.graphics.getWidth()/20.f,Gdx.graphics.getHeight()/10.f);//wielkosc  
         batch.end(); 
     }

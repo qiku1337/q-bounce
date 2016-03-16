@@ -90,8 +90,8 @@ public class StageScreen implements GameScreen {
 		
                         if(!BounceActor.respawn){
                             Game.mainCamera.translate(
-                                    BounceActor.xvel,
-                                    BounceActor.yvel
+                                BounceActor.xvel,
+                                BounceActor.yvel
                             );
                             Game.mainCamera.update();
                         }else{
