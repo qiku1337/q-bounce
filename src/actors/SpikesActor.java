@@ -46,18 +46,18 @@ public class SpikesActor extends Actor {
 		
 		// shape
 		PolygonShape shape = new PolygonShape();
-		shape.setAsBox(25.f * Physics.SCALE, 25.f * Physics.SCALE);
+		shape.setAsBox(17.f * Physics.SCALE, 17.f * Physics.SCALE);
 		
 		// body
 		BodyDef bodyDef = new BodyDef();
 		bodyDef.type = BodyDef.BodyType.StaticBody;
-                bodyDef.position.set(0f,-1.f);
+                bodyDef.position.set(1.f,-1.5f);
 		body = Game.physics.world.createBody(bodyDef);
 		fixture = body.createFixture(shape, 2.f);
 		fixture.setUserData(this);
                 
                 sprite = new Sprite(Game.assets.get("assets/spike_A.png", Texture.class));
-		sprite.setBounds(1.f, 1.f, 55.f, 55.f);
+		sprite.setBounds(1.f, 1.f, 40.f, 40.f);
 		sprite.setOriginCenter(); 
                 
 		shape.dispose();

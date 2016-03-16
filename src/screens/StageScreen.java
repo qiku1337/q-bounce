@@ -27,9 +27,11 @@ import actors.BounceActor;
 import actors.DebugScreenActor;
 import actors.GroundActor;
 import actors.SpikesActor;
+import actors.TileActor;
 import com.badlogic.gdx.Gdx;
 import static com.badlogic.gdx.Gdx.gl;
 import com.badlogic.gdx.Input;
+import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.physics.box2d.Body;
@@ -51,14 +53,18 @@ public class StageScreen implements GameScreen {
                 Game.assets.load("assets/layer-2.png", Texture.class);
                 Game.assets.load("assets/layer-3.png", Texture.class);
                 Game.assets.load("assets/layer-5.png", Texture.class);
-                Game.assets.load("assets/spike_A.png", Texture.class); 
+                Game.assets.load("assets/spike_A.png", Texture.class);
+                Game.assets.load("assets/Tile.png", Texture.class); 
+                Game.assets.load("assets/sound/jump_01.wav", Sound.class);
+                
+                //Game.assets.load("assets/sound/level1.mp3", Sound.class);
 	}
 
 	@Override
 	public void show() {
 		// prepare scene camera
 		Game.mainCamera.setToOrtho(false);
-		Game.mainCamera.translate(-400.f, -300.f);
+		Game.mainCamera.translate(-400.f, -250.f);
                 Game.mainCamera.zoom =0.5f;
 		Game.mainCamera.update();
 		
@@ -67,7 +73,12 @@ public class StageScreen implements GameScreen {
                 Game.scene.BACKGROUND.add(new BackgroundActor(0));
                 Game.scene.ACTION_2.add(new GroundActor(0));
                 Game.scene.ACTION_2.add(new SpikesActor(0));
+                Game.scene.ACTION_2.add(new TileActor(0));
                 Game.scene.ACTION_3.add(new BounceActor(0));
+                
+            //Sound sound = Gdx.audio.newSound(Gdx.files.internal("assets/sound/level1.mp3"));
+           // long idsound = sound.play(1.0f);        
+           //sound.setLooping(idsound, true);
 	}
 
 	@Override
@@ -85,8 +96,8 @@ public class StageScreen implements GameScreen {
                             Game.mainCamera.update();
                         }else{
                             Game.mainCamera.translate(
-                                    -BounceActor.x*100.f,
-                                    -BounceActor.y*100.f
+                                    -BounceActor.x,
+                                    -BounceActor.y
                             );
                             Game.mainCamera.update();
                             BounceActor.respawn=false;

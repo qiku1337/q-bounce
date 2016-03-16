@@ -22,6 +22,9 @@
  * THE SOFTWARE.
  */
 package actors;
+import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.Sprite;
+import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.BodyDef;
 import com.badlogic.gdx.physics.box2d.Fixture;
@@ -36,7 +39,8 @@ import system.Physics;
 public class GroundActor extends Actor {
 	private final Body body;
 	private final Fixture fixture;
-	
+	private Sprite sprGround;
+        
 	public GroundActor(int id) {
 		super(id);
 		
@@ -51,6 +55,24 @@ public class GroundActor extends Actor {
 		body = Game.physics.world.createBody(bodyDef);
 		fixture = body.createFixture(shape, 2.f);
 		fixture.setUserData(this);
+                
+                sprGround = new Sprite(Game.assets.get("assets/Tile.png", Texture.class));
+                sprGround.getTexture().setWrap(Texture.TextureWrap.Repeat, Texture.TextureWrap.Repeat);
+		float region = 80.f * Physics.SCALE_INV;
+		sprGround.setBounds(0.f, 0.f, region/4, sprGround.getHeight()/4);
+		sprGround.setRegionWidth((int)region);
+                
 		shape.dispose();
 	}
-}
+        @Override
+        public void draw(SpriteBatch batch){
+                sprGround.setCenter(
+			(body.getPosition().x * Physics.SCALE_INV) ,
+			(body.getPosition().y * Physics.SCALE_INV)
+		);
+		batch.begin();
+		sprGround.draw(batch);
+		batch.end();        	
+        }
+ }
+

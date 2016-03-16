@@ -103,8 +103,10 @@ public class BounceActor extends Actor {
 		fixture = body.createFixture(shape, 2.f);
                 //fixture.setRestitution(.1f);
 		fixture.setFriction(.4f);
-                fixture.setDensity(1.5f);
+                fixture.setDensity(1.5f);                
                 fixture.setUserData(this);
+                
+                body.setFixedRotation(true);
  
                 shape.dispose();
                 
@@ -118,12 +120,13 @@ public class BounceActor extends Actor {
                     }
                 }
                 animation = new Animation(0.03f, ballguy);      
-                batch = new SpriteBatch(); 	  
+                batch = new SpriteBatch();
     }
     
     @Override
     public void create() {
         super.create();
+        
         System.out.println("Bounce Created");        
     }
     @Override
@@ -138,12 +141,12 @@ public class BounceActor extends Actor {
         }            
         if(Gdx.input.isKeyPressed(Input.Keys.RIGHT)) {
             //frame += body.getLinearVelocity().len()*delta;
-            if(body.getLinearVelocity().len()<2.5f) 
+            if(body.getLinearVelocity().len()<2.1f) 
             moveright();
         }
         if(Gdx.input.isKeyPressed(Input.Keys.LEFT)) {
             //frame += body.getLinearVelocity().len()*delta;
-            if(body.getLinearVelocity().len()<2.5f) 
+            if(body.getLinearVelocity().len()<2.1f) 
             moveleft();
         }
         if(Gdx.input.isKeyPressed(Input.Keys.Z)) {
@@ -155,23 +158,21 @@ public class BounceActor extends Actor {
                        
         xvel=body.getLinearVelocity().x*1.65f;        
         yvel=body.getLinearVelocity().y*1.65f;
-        x=getX();
-        y=getY();
-        //draw();    
+        x=getX();        
+        y=getY();       
         frame += delta;
     }
     @Override
-    public void draw(SpriteBatch batch) {
-                        
-        batch.setProjectionMatrix(Game.mainCamera.projection);     
+    public void draw(SpriteBatch batch) {                        
+             
         currentFrame = animation.getKeyFrame(frame, true);  
         batch.begin();        
-        
+        batch.setProjectionMatrix(Game.mainCamera.projection);
         batch.draw(currentFrame,                                 
-                getX()-20.f, 
-                getY()-20.f,                       //miejsce rysowania
+                getX()-20, 
+                getY()-70,                       //miejsce rysowania
                 Gdx.graphics.getWidth()/20.f,Gdx.graphics.getHeight()/10.f);//wielkosc  
-        batch.end();    
+        batch.end(); 
     }
     @Override
     public void dispose(){
@@ -179,7 +180,7 @@ public class BounceActor extends Actor {
     }
     public void jump() {
         if(allowjump){
-		body.applyForceToCenter(0.f, 20.f, true);
+		body.applyForceToCenter(0.f, 15.f, true);
                 sound = Gdx.audio.newSound(Gdx.files.internal("assets/sound/jump_01.wav"));
                 long idsound = sound.play(1.0f);
                 allowjump=false;
@@ -189,7 +190,7 @@ public class BounceActor extends Actor {
 		body.applyForceToCenter(1.2f, 0f, true);
             
     }
-    public void moveleft() {
+    public void moveleft() {        
 		body.applyForceToCenter(-1.2f, 0f, true);                
     }
     public float getY() {

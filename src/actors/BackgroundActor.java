@@ -59,13 +59,14 @@ public class BackgroundActor extends Actor {
                     
         BodyDef bodyDef = new BodyDef();
         bodyDef.type = BodyDef.BodyType.KinematicBody;		
-	bodyDef.position.set(0.f, -1.f);
+	bodyDef.position.set(0.f, -2.5f);
         bodylayer = Game.physics.world.createBody(bodyDef);
         body = Game.physics.world.createBody(bodyDef);
 
         spritelayer1 = new Sprite(Game.assets.get("assets/layer-1.png", Texture.class));
+        spritelayer1.getTexture().setWrap(Texture.TextureWrap.Repeat, Texture.TextureWrap.Repeat);
         spritelayer1.setBounds(0.f, 0.f, 
-                spritelayer1.getOriginX(), 
+                spritelayer1.getOriginX()*4, 
                 spritelayer1.getOriginY()
         );
 	spritelayer1.setOriginCenter(); 
@@ -77,13 +78,12 @@ public class BackgroundActor extends Actor {
         );
 	spritecloud.setOriginCenter(); 
         
-        batch = new SpriteBatch(); 
     }
     @Override
     public void update(float delta){ 
         body.setTransform(
             frame*Physics.SCALE*velocity,
-            0.f,
+            -1.5f,
             0.f
 	); 
         frame+=delta;
@@ -101,12 +101,12 @@ public class BackgroundActor extends Actor {
 		spritelayer1.draw(batch);
             batch.end();
 		
-            /*            spritecloud.setCenter(
-            body.getPosition().x * Physics.SCALE_INV,
-            body.getPosition().y * Physics.SCALE_INV
+            spritecloud.setCenter(
+                body.getPosition().x * Physics.SCALE_INV,
+                body.getPosition().y * Physics.SCALE_INV
             );
             batch.begin();
             spritecloud.draw(batch);
-            batch.end();*/
+            batch.end();
 	}
  }
