@@ -40,12 +40,19 @@ import com.badlogic.gdx.physics.box2d.PolygonShape;
 import com.badlogic.gdx.physics.box2d.Contact;
 import main.Game;
 import scene.Actor;
+import screens.StageScreen;
 import system.Physics;
 /**
  *
  * @author Qiku
  */
 public class BounceActor extends Actor {
+    
+    public static float xvel,yvel;
+    
+    public static float x,y;
+    
+    public static boolean respawn=false;
     
     private final Body body;
     
@@ -54,16 +61,14 @@ public class BounceActor extends Actor {
     private Sprite binspr;
     //private float velocity;
     private float speed;
-    
-    public static boolean kul=false;
-    
-    private SpriteBatch spriteBatch;
+        
+    //private SpriteBatch spriteBatch;
     
     private Animation animation;    
 
-    private Texture machineTexture;
+    private final Texture machineTexture;
     
-    private TextureRegion[] ballguy;
+    private final TextureRegion[] ballguy;
     
     private TextureRegion currentFrame;
     
@@ -79,6 +84,7 @@ public class BounceActor extends Actor {
     
     private boolean allowjump=false;
     
+    private SpriteBatch batch;
     Vector2 vel;
     
     public BounceActor(int id) {
@@ -92,7 +98,7 @@ public class BounceActor extends Actor {
 		BodyDef bodyDef = new BodyDef();
 		bodyDef.type = BodyDef.BodyType.DynamicBody;
                 
-		bodyDef.position.set((float)Math.random()*1.f, (float)Math.random()*1.f);
+		bodyDef.position.set(0.f, 0.f);
 		body = Game.physics.world.createBody(bodyDef);
 		fixture = body.createFixture(shape, 2.f);
                 //fixture.setRestitution(.1f);
@@ -112,47 +118,67 @@ public class BounceActor extends Actor {
             }
         }
         animation = new Animation(0.03f, ballguy);      
-        spriteBatch = new SpriteBatch(); 	  
+        batch = new SpriteBatch(); 	  
     }
     
     @Override
     public void create() {
         super.create();
-        System.out.println("Bounce Created"); 
-       
+        System.out.println("Bounce Created");        
     }
     @Override
-    public void update(float delta){
-            if(Gdx.input.isKeyJustPressed(Input.Keys.R)) {                        
-                        Game.scene.ACTION_2.add(new BounceActor(id));
-			this.remove();
-            }
-            if(Gdx.input.isKeyJustPressed(Input.Keys.UP)) {
-                jump();
-            }            
-            if(Gdx.input.isKeyPressed(Input.Keys.RIGHT)) {
-                //frame += body.getLinearVelocity().len()*delta;
-                if(body.getLinearVelocity().len()<2.f) 
-                    moveright();
-            }
-            if(Gdx.input.isKeyPressed(Input.Keys.LEFT)) {
-                //frame += body.getLinearVelocity().len()*delta;
-                if(body.getLinearVelocity().len()<2.f) 
-                moveleft();
-            }
-            frame += delta;
-            DebugScreenActor.info.append("bounce anim frame: ");
-            DebugScreenActor.info.append(frame*10);
-            DebugScreenActor.info.append("\n");
+    public void update(float delta){  
+        if(Gdx.input.isKeyJustPressed(Input.Keys.R)) {
+            respawn=true;
+            Game.scene.ACTION_2.add(new BounceActor(id));
+            this.remove();
+        }
+        if(Gdx.input.isKeyJustPressed(Input.Keys.UP)) {
+            jump();
+        }            
+        if(Gdx.input.isKeyPressed(Input.Keys.RIGHT)) {
+            //frame += body.getLinearVelocity().len()*delta;
+            if(body.getLinearVelocity().len()<2.5f) 
+            moveright();
+        }
+        if(Gdx.input.isKeyPressed(Input.Keys.LEFT)) {
+            //frame += body.getLinearVelocity().len()*delta;
+            if(body.getLinearVelocity().len()<2.5f) 
+            moveleft();
+        }
+        if(Gdx.input.isKeyPressed(Input.Keys.Z)) {
+                Game.mainCamera.zoom+=0.01f;
+        }
+        if(Gdx.input.isKeyPressed(Input.Keys.X)) {
+                Game.mainCamera.zoom-=0.01f;
+        }
+                       
+        xvel=body.getLinearVelocity().x*1.65f;
+        DebugScreenActor.info.append("bounce x: ");
+        DebugScreenActor.info.append(getX());
+        DebugScreenActor.info.append("\n");
+        
+        yvel=body.getLinearVelocity().y*1.65f;
+        x=getX();
+        y=getY();
+        draw();    
+        frame += delta;
+    }
+    public void draw() {
+		//sprite.setCenter(
+		//	(body.getPosition().x * Physics.SCALE_INV) ,
+		//	(body.getPosition().y * Physics.SCALE_INV)
+		//);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT | GL20.GL_DEPTH_BUFFER_BIT);                        // #14
-                
+        batch.setProjectionMatrix(Game.mainCamera.projection);     
         currentFrame = animation.getKeyFrame(frame, true);  
-        spriteBatch.begin();        
-        spriteBatch.draw(currentFrame,                                 
-                380.f+getX()*100.f, 
-                290.f+getY()*100.f,                       //miejsce rysowania
-                Gdx.graphics.getWidth()/20.f,Gdx.graphics.getHeight()/10.f);  //wielkosc  
-        spriteBatch.end();        
+        batch.begin();        
+        
+        batch.draw(currentFrame,                                 
+                getX()-20.f, 
+                getY()-10.f,                       //miejsce rysowania
+                Gdx.graphics.getWidth()/20.f,Gdx.graphics.getHeight()/10.f);//wielkosc  
+        batch.end();    
     }
     @Override
     public void dispose(){
@@ -161,24 +187,23 @@ public class BounceActor extends Actor {
     public void jump() {
         if(allowjump){
 		body.applyForceToCenter(0.f, 20.f, true);
-                sound = Gdx.audio.newSound(Gdx.files.internal("assets/sound/jumpland.mp3"));
+                sound = Gdx.audio.newSound(Gdx.files.internal("assets/sound/jump_01.wav"));
                 long idsound = sound.play(1.0f);
                 allowjump=false;
         }
     }
     public void moveright() {
-		body.applyForceToCenter(1.5f, 0f, true);
-                
+		body.applyForceToCenter(1.2f, 0f, true);
+            
     }
     public void moveleft() {
-		body.applyForceToCenter(-1.5f, 0f, true);                
+		body.applyForceToCenter(-1.2f, 0f, true);                
     }
     public float getY() {
                 return body.getPosition().y;
     }
-    public float getX() {
-                System.out.println(body.getPosition().x);
-                return body.getPosition().x;
+    public float getX() {         
+                return body.getPosition().x;      
                 
     }
     @Override

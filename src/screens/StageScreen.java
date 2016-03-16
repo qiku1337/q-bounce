@@ -22,15 +22,20 @@
  * THE SOFTWARE.
  */
 package screens;
+import actors.BackgroundActor;
 import actors.BounceActor;
 import actors.DebugScreenActor;
 import actors.GroundActor;
+import actors.SpikesActor;
+import com.badlogic.gdx.Gdx;
 import static com.badlogic.gdx.Gdx.gl;
+import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.Fixture;
 import main.Game;
+import system.Physics;
 /**
  *
  * @author Qiku
@@ -41,8 +46,8 @@ public class StageScreen implements GameScreen {
 	
 	@Override
 	public void prepare() {
-		//Game.assets.load("assets/dragonball.png", Texture.class);
-                //BounceActor.preload();
+		Game.assets.load("assets/dragonball.png", Texture.class);
+                Game.assets.load("assets/spike_A.png", Texture.class); 
 	}
 
 	@Override
@@ -50,19 +55,38 @@ public class StageScreen implements GameScreen {
 		// prepare scene camera
 		Game.mainCamera.setToOrtho(false);
 		Game.mainCamera.translate(-400.f, -300.f);
+                Game.mainCamera.zoom =0.5f;
 		Game.mainCamera.update();
 		
 		// create turret actor
-		Game.scene.DEBUG.add(new DebugScreenActor());
+		Game.scene.DEBUG.add(new DebugScreenActor());               
 		Game.scene.ACTION_2.add(new BounceActor(0));
                 Game.scene.ACTION_2.add(new GroundActor(0));
+                Game.scene.ACTION_2.add(new SpikesActor(0));
 	}
 
 	@Override
 	public void render(float delta) {
         // clear target buffer
+       
         gl.glClearColor(0.f, 0.f, 0.f, 0.f);
         gl.glClear(GL20.GL_COLOR_BUFFER_BIT | GL20.GL_DEPTH_BUFFER_BIT);
+		
+                        if(!BounceActor.respawn){
+                            Game.mainCamera.translate(
+                                    BounceActor.xvel,
+                                    BounceActor.yvel
+                            );
+                            Game.mainCamera.update();
+                        }else{
+                            Game.mainCamera.translate(
+                                    -BounceActor.x*100.f,
+                                    -BounceActor.y*100.f
+                            );
+                            Game.mainCamera.update();
+                            BounceActor.respawn=false;
+                        }
+		
 		
 		// perform game systems
 		Game.performSystems();

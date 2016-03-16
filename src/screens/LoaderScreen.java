@@ -76,7 +76,16 @@ public class LoaderScreen implements Screen {
         spriteBatch = new SpriteBatch();
         font = new BitmapFont();
         font.setColor(Color.RED);
-    }
+        
+        if(this.clearAssets) {
+            Game.assets.clear();
+        }
+        
+        // prepare next screen to load
+        if(this.next != null) {
+            this.next.prepare();
+        }
+    }   
     /**
      * Frame update.
      * Update asset manager and render some loader screen stuff.
@@ -96,10 +105,16 @@ public class LoaderScreen implements Screen {
         spriteBatch.end();
 
         frame += 1.f*delta;
-        ((Game)Gdx.app.getApplicationListener()).setScreen(this.next);
-    }
-
-    /**
+        //((Game)Gdx.app.getApplicationListener()).setScreen(this.next);
+        if(Game.assets.update()) {
+			Game.app.setScreen(next);
+        }
+        
+		// perform game systems
+		Game.performSystems();
+    }       
+    
+   /**
      * Handle window resizing.
      * Performed when window client resized.
      * @param width
