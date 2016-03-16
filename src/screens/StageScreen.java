@@ -47,6 +47,10 @@ public class StageScreen implements GameScreen {
 	@Override
 	public void prepare() {
 		Game.assets.load("assets/dragonball.png", Texture.class);
+                Game.assets.load("assets/layer-1.png", Texture.class);
+                Game.assets.load("assets/layer-2.png", Texture.class);
+                Game.assets.load("assets/layer-3.png", Texture.class);
+                Game.assets.load("assets/layer-5.png", Texture.class);
                 Game.assets.load("assets/spike_A.png", Texture.class); 
 	}
 
@@ -59,10 +63,11 @@ public class StageScreen implements GameScreen {
 		Game.mainCamera.update();
 		
 		// create turret actor
-		Game.scene.DEBUG.add(new DebugScreenActor());               
-		Game.scene.ACTION_2.add(new BounceActor(0));
+		Game.scene.DEBUG.add(new DebugScreenActor());   
+                Game.scene.BACKGROUND.add(new BackgroundActor(0));
                 Game.scene.ACTION_2.add(new GroundActor(0));
                 Game.scene.ACTION_2.add(new SpikesActor(0));
+                Game.scene.ACTION_3.add(new BounceActor(0));
 	}
 
 	@Override

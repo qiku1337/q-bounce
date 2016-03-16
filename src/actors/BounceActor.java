@@ -108,17 +108,17 @@ public class BounceActor extends Actor {
  
                 shape.dispose();
                 
-        machineTexture = new Texture(Gdx.files.internal("assets/ballguy.png"));        
-        TextureRegion[][] tmp = TextureRegion.split(machineTexture, machineTexture.getWidth()/FRAME_COLS, machineTexture.getHeight()/FRAME_ROWS);              // #10
-        ballguy = new TextureRegion[FRAME_COLS * FRAME_ROWS];        
-        int index = 0;
-        for (int i = 0; i < FRAME_ROWS; i++) {
-            for (int j = 0; j < FRAME_COLS; j++) {
-                ballguy[index++] = tmp[i][j];
-            }
-        }
-        animation = new Animation(0.03f, ballguy);      
-        batch = new SpriteBatch(); 	  
+                machineTexture = new Texture(Gdx.files.internal("assets/ballguy.png"));        
+                TextureRegion[][] tmp = TextureRegion.split(machineTexture, machineTexture.getWidth()/FRAME_COLS, machineTexture.getHeight()/FRAME_ROWS);              // #10
+                ballguy = new TextureRegion[FRAME_COLS * FRAME_ROWS];        
+                int index = 0;
+                for (int i = 0; i < FRAME_ROWS; i++) {
+                    for (int j = 0; j < FRAME_COLS; j++) {
+                        ballguy[index++] = tmp[i][j];
+                    }
+                }
+                animation = new Animation(0.03f, ballguy);      
+                batch = new SpriteBatch(); 	  
     }
     
     @Override
@@ -153,30 +153,23 @@ public class BounceActor extends Actor {
                 Game.mainCamera.zoom-=0.01f;
         }
                        
-        xvel=body.getLinearVelocity().x*1.65f;
-        DebugScreenActor.info.append("bounce x: ");
-        DebugScreenActor.info.append(getX());
-        DebugScreenActor.info.append("\n");
-        
+        xvel=body.getLinearVelocity().x*1.65f;        
         yvel=body.getLinearVelocity().y*1.65f;
         x=getX();
         y=getY();
-        draw();    
+        //draw();    
         frame += delta;
     }
-    public void draw() {
-		//sprite.setCenter(
-		//	(body.getPosition().x * Physics.SCALE_INV) ,
-		//	(body.getPosition().y * Physics.SCALE_INV)
-		//);
-        Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT | GL20.GL_DEPTH_BUFFER_BIT);                        // #14
+    @Override
+    public void draw(SpriteBatch batch) {
+                        
         batch.setProjectionMatrix(Game.mainCamera.projection);     
         currentFrame = animation.getKeyFrame(frame, true);  
         batch.begin();        
         
         batch.draw(currentFrame,                                 
                 getX()-20.f, 
-                getY()-10.f,                       //miejsce rysowania
+                getY()-20.f,                       //miejsce rysowania
                 Gdx.graphics.getWidth()/20.f,Gdx.graphics.getHeight()/10.f);//wielkosc  
         batch.end();    
     }

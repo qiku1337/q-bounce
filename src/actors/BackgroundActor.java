@@ -1,78 +1,112 @@
 /*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
+ * The MIT License
+ *
+ * Copyright 2016 Qiku.
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in
+ * all copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+ * THE SOFTWARE.
  */
 package actors;
 
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.Input;
+import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Matrix4;
+import com.badlogic.gdx.physics.box2d.Body;
+import com.badlogic.gdx.physics.box2d.BodyDef;
 import main.Game;
 import scene.Actor;
+import system.Physics;
 
 /**
  *
- * @author Konrad Nowakowski https://github.com/konrad92
+ * @author Qiku
  */
 public class BackgroundActor extends Actor {	
-	/**
-	 * The background tilling sprite.
-	 */
-	private final Sprite background;
-	
-	private final float pixelSize;
-	
-	/**
-	 * Ctor.
-	 * @see Actor#Actor(int) 
-	 * @param id Unique actor identifier.
-	 */
-	public BackgroundActor(int id) {
-		super(id);
+    
+    private SpriteBatch batch;
+            
+    private final Sprite spritecloud;
+    private Body body;
+    
+    private final Sprite spritelayer1;
+    private Body bodylayer;
+    
+    private float frame;
+    
+    private final float velocity=100.f;
+            
+    public BackgroundActor(int id) {
+        super(id);
+        frame = -10.f;
+                    
+        BodyDef bodyDef = new BodyDef();
+        bodyDef.type = BodyDef.BodyType.KinematicBody;		
+	bodyDef.position.set(0.f, -1.f);
+        bodylayer = Game.physics.world.createBody(bodyDef);
+        body = Game.physics.world.createBody(bodyDef);
+
+        spritelayer1 = new Sprite(Game.assets.get("assets/layer-1.png", Texture.class));
+        spritelayer1.setBounds(0.f, 0.f, 
+                spritelayer1.getOriginX(), 
+                spritelayer1.getOriginY()
+        );
+	spritelayer1.setOriginCenter(); 
+        
+        spritecloud = new Sprite(Game.assets.get("assets/layer-5.png", Texture.class));
+        spritecloud.setBounds(1.f, 1.f, 
+                spritecloud.getOriginX(), 
+                spritecloud.getOriginY()
+        );
+	spritecloud.setOriginCenter(); 
+        
+        batch = new SpriteBatch(); 
+    }
+    @Override
+    public void update(float delta){ 
+        body.setTransform(
+            frame*Physics.SCALE*velocity,
+            0.f,
+            0.f
+	); 
+        frame+=delta;
+        if(frame>10.f) 
+            frame=-10.f;
+        //draw();
+    }
+    @Override
+    public void draw(SpriteBatch batch) {            
+            spritelayer1.setCenter(
+		bodylayer.getPosition().x * Physics.SCALE_INV,
+		bodylayer.getPosition().y * Physics.SCALE_INV
+            );
+            batch.begin();                
+		spritelayer1.draw(batch);
+            batch.end();
 		
-		// create the blueprint sprite
-		this.background = new Sprite(
-			Game.assets.get("assets/dragonball.png", Texture.class));
-		this.background.getTexture().setWrap(
-			Texture.TextureWrap.Repeat,
-			Texture.TextureWrap.Repeat
-		);
-		
-		// change size to identity screen-coords
-		this.background.setBounds(-1.f, -1.f, 2.f, 2.f);
-		this.pixelSize = 1.f/(float)this.background.getTexture().getWidth();
+            /*            spritecloud.setCenter(
+            body.getPosition().x * Physics.SCALE_INV,
+            body.getPosition().y * Physics.SCALE_INV
+            );
+            batch.begin();
+            spritecloud.draw(batch);
+            batch.end();*/
 	}
-	
-	/**
-	 * Draw the background grid.
-	 * @see Actor#draw(com.badlogic.gdx.graphics.g2d.SpriteBatch) 
-	 * @param batch Sprite batching
-	 */
-	@Override
-	public void draw(SpriteBatch batch) {
-		// change drawing projection to identity
-		batch.setProjectionMatrix(new Matrix4());
-		
-		float w = (float)Gdx.graphics.getWidth() * pixelSize, 
-			h = (float)Gdx.graphics.getHeight() * pixelSize,
-			x = (float)Game.mainCamera.position.x * pixelSize,
-			y = (float)-Game.mainCamera.position.y * pixelSize;
-		
-		background.setU(x);
-		background.setU2(x + w);
-		background.setV(y);
-		background.setV2(y + h);
-		
-		// fill-up the screen
-		batch.begin();
-		background.draw(batch);
-		batch.end();
-		
-		// reverse camera projection
-		batch.setProjectionMatrix(Game.mainCamera.combined);
-	}
-}
+ }

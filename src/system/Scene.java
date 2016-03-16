@@ -156,7 +156,7 @@ public class Scene implements System {
 		 */
 		public void debug(ShapeRenderer gizmo) {
 			for(Actor actor : this.actors) {
-				actor.debug(gizmo);
+				//actor.debug(gizmo);
 			}
 		}
 		
