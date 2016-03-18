@@ -37,6 +37,7 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.Fixture;
+import controllers.CameraController;
 import main.Game;
 import system.Physics;
 /**
@@ -46,6 +47,7 @@ import system.Physics;
 public class StageScreen implements GameScreen {
 	Body body;
 	Fixture fixture;
+        private final CameraController camera = new CameraController();
 	
 	@Override
 	public void prepare() {
@@ -66,11 +68,9 @@ public class StageScreen implements GameScreen {
 
 	@Override
 	public void show() {
-		// prepare scene camera
-		Game.mainCamera.setToOrtho(false);
-		Game.mainCamera.translate(-400.f, -250.f);
-                Game.mainCamera.zoom =0.6f;
-		Game.mainCamera.update();
+                reConfigure();
+		Game.scene.controllers.add(camera);
+                //Game.inputMultiplexer.addProcessor(camera);
 		
 		// create turret actor
 		Game.scene.DEBUG.add(new DebugScreenActor());   
@@ -90,25 +90,8 @@ public class StageScreen implements GameScreen {
         // clear target buffer
        
         gl.glClearColor(0.f, 0.f, 0.f, 0.f);
-        gl.glClear(GL20.GL_COLOR_BUFFER_BIT | GL20.GL_DEPTH_BUFFER_BIT);
-		
-                        if(!BounceActor.respawn){                            
-                            Game.mainCamera.translate(
-                                BounceActor.xvel,
-                                BounceActor.yvel
-                            );
-                            Game.mainCamera.update();
-                        }else{
-                            //Game.mainCamera.translate(Vector2.X);
-                            Game.mainCamera.translate(
-                                    -BounceActor.x,
-                                    -BounceActor.y
-                            );
-                            Game.mainCamera.update();
-                            BounceActor.respawn=false;
-                        }
-		
-		
+        gl.glClear(GL20.GL_COLOR_BUFFER_BIT | GL20.GL_DEPTH_BUFFER_BIT);                      
+			
 		// perform game systems
 		Game.performSystems();
 	}

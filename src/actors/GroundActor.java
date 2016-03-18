@@ -46,7 +46,7 @@ public class GroundActor extends Actor {
 		
 		// shape
 		PolygonShape shape = new PolygonShape();
-		shape.setAsBox(1000.f * Physics.SCALE, 15.f * Physics.SCALE);
+		shape.setAsBox(1000.f * Physics.SCALE, 20.f * Physics.SCALE);
 		
 		// body
 		BodyDef bodyDef = new BodyDef();

@@ -59,7 +59,7 @@ public class BackgroundActor extends Actor {
                     
         BodyDef bodyDef = new BodyDef();
         bodyDef.type = BodyDef.BodyType.KinematicBody;		
-	bodyDef.position.set(0.f, -2.5f);
+	bodyDef.position.set(0.f, -1.5f);
         bodylayer = Game.physics.world.createBody(bodyDef);
         body = Game.physics.world.createBody(bodyDef);
 
