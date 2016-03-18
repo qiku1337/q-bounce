@@ -34,6 +34,7 @@ import com.badlogic.gdx.Input;
 import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.Fixture;
 import main.Game;
@@ -54,7 +55,10 @@ public class StageScreen implements GameScreen {
                 Game.assets.load("assets/layer-3.png", Texture.class);
                 Game.assets.load("assets/layer-5.png", Texture.class);
                 Game.assets.load("assets/spike_A.png", Texture.class);
-                Game.assets.load("assets/Tile.png", Texture.class); 
+                Game.assets.load("assets/Tile.png", Texture.class);
+                Game.assets.load("assets/ballmove.png", Texture.class);
+                Game.assets.load("assets/ballguy.png", Texture.class);
+                
                 Game.assets.load("assets/sound/jump_01.wav", Sound.class);
                 
                 //Game.assets.load("assets/sound/level1.mp3", Sound.class);
@@ -65,7 +69,7 @@ public class StageScreen implements GameScreen {
 		// prepare scene camera
 		Game.mainCamera.setToOrtho(false);
 		Game.mainCamera.translate(-400.f, -250.f);
-                Game.mainCamera.zoom =0.5f;
+                Game.mainCamera.zoom =0.6f;
 		Game.mainCamera.update();
 		
 		// create turret actor
@@ -88,13 +92,14 @@ public class StageScreen implements GameScreen {
         gl.glClearColor(0.f, 0.f, 0.f, 0.f);
         gl.glClear(GL20.GL_COLOR_BUFFER_BIT | GL20.GL_DEPTH_BUFFER_BIT);
 		
-                        if(!BounceActor.respawn){
+                        if(!BounceActor.respawn){                            
                             Game.mainCamera.translate(
                                 BounceActor.xvel,
                                 BounceActor.yvel
                             );
                             Game.mainCamera.update();
                         }else{
+                            //Game.mainCamera.translate(Vector2.X);
                             Game.mainCamera.translate(
                                     -BounceActor.x,
                                     -BounceActor.y

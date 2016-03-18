@@ -40,7 +40,6 @@ import com.badlogic.gdx.physics.box2d.PolygonShape;
 import com.badlogic.gdx.physics.box2d.Contact;
 import main.Game;
 import scene.Actor;
-import screens.StageScreen;
 import system.Physics;
 /**
  *
@@ -64,7 +63,7 @@ public class BounceActor extends Actor {
         
     //private SpriteBatch spriteBatch;
     
-    private Animation animation;    
+    private final Animation animation;    
 
     private final Texture machineTexture;
     
@@ -74,7 +73,7 @@ public class BounceActor extends Actor {
     
     private BitmapFont font;
     
-    private static final int        FRAME_COLS = 28;
+    private static final int        FRAME_COLS = 7;
     
     private static final int        FRAME_ROWS = 1; 
     
@@ -84,7 +83,7 @@ public class BounceActor extends Actor {
     
     private boolean allowjump=false;
     
-    private SpriteBatch batch;
+    private final SpriteBatch batch;
     Vector2 vel;
     
     public BounceActor(int id) {
@@ -110,7 +109,7 @@ public class BounceActor extends Actor {
  
                 shape.dispose();
                 
-                machineTexture = new Texture(Gdx.files.internal("assets/ballguy.png"));        
+                machineTexture = new Texture(Gdx.files.internal("assets/ballmove.png"));        
                 TextureRegion[][] tmp = TextureRegion.split(machineTexture, machineTexture.getWidth()/FRAME_COLS, machineTexture.getHeight()/FRAME_ROWS);              // #10
                 ballguy = new TextureRegion[FRAME_COLS * FRAME_ROWS];        
                 int index = 0;
@@ -141,13 +140,16 @@ public class BounceActor extends Actor {
         }            
         if(Gdx.input.isKeyPressed(Input.Keys.RIGHT)) {
             //frame += body.getLinearVelocity().len()*delta;
-            if(body.getLinearVelocity().len()<2.1f) 
+            frame += delta;
+            if(body.getLinearVelocity().len()<2.1f){
             moveright();
+            }
         }
         if(Gdx.input.isKeyPressed(Input.Keys.LEFT)) {
-            //frame += body.getLinearVelocity().len()*delta;
-            if(body.getLinearVelocity().len()<2.1f) 
+            frame += delta;  
+            if(body.getLinearVelocity().len()<2.1f){               
             moveleft();
+            }
         }
         if(Gdx.input.isKeyPressed(Input.Keys.Z)) {
                 Game.mainCamera.zoom+=0.01f;
@@ -155,12 +157,17 @@ public class BounceActor extends Actor {
         if(Gdx.input.isKeyPressed(Input.Keys.X)) {
                 Game.mainCamera.zoom-=0.01f;
         }
+        
+        //reset frame if stop moving
+        if(body.getLinearVelocity().len()<1.8f){
+            frame=0;
+        }        
                        
-        xvel=body.getLinearVelocity().x*1.65f;        
-        yvel=body.getLinearVelocity().y*1.65f;
-        x=getX();        
-        y=getY();       
-        frame += delta;
+        xvel=body.getLinearVelocity().x*1.67f;        
+        yvel=body.getLinearVelocity().y*1.67f;
+        x=getX()*100.f;        
+        y=getY()*100.f;       
+        
         //Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT | GL20.GL_DEPTH_BUFFER_BIT);
     }
     @Override
@@ -168,22 +175,30 @@ public class BounceActor extends Actor {
              
         currentFrame = animation.getKeyFrame(frame, true);  
         batch.begin();        
-        
-        batch.draw(currentFrame,                                 
-                -20.f+getX()*100.f, 
-                -20.f+getY()*100.f,                     //miejsce rysowania
-                Gdx.graphics.getWidth()/20.f,Gdx.graphics.getHeight()/10.f);//wielkosc  
+        //batch.setProjectionMatrix(Game.mainCamera.projection);
+        batch.draw(
+                currentFrame,                                 
+                -18.f+getX()*100.f, 
+                -15.f+getY()*100.f,                     //miejsce rysowania
+                Gdx.graphics.getWidth()/22.f,
+                Gdx.graphics.getHeight()/18.f  //wielkosc
+        );
         batch.end(); 
     }
     @Override
     public void dispose(){
         Game.physics.world.destroyBody(body);       
     }
+    public Vector2 getPosition() {
+		return body.getTransform().getPosition().scl(Physics.SCALE_INV);
+    }
     public void jump() {
         if(allowjump){
 		body.applyForceToCenter(0.f, 15.f, true);
+                
                 sound = Gdx.audio.newSound(Gdx.files.internal("assets/sound/jump_01.wav"));
                 long idsound = sound.play(1.0f);
+                
                 allowjump=false;
         }
     }
@@ -192,7 +207,8 @@ public class BounceActor extends Actor {
             
     }
     public void moveleft() {        
-		body.applyForceToCenter(-1.2f, 0f, true);                
+		body.applyForceToCenter(-1.2f, 0f, true);  
+                
     }
     public float getY() {
                 return body.getPosition().y;
@@ -203,11 +219,10 @@ public class BounceActor extends Actor {
     }
     @Override
     public void onHit(Actor actor, Contact contact) {
-	if(actor instanceof GroundActor) {
+	if(actor instanceof GroundActor || actor instanceof TileActor) {
             allowjump=true;
             sound = Gdx.audio.newSound(Gdx.files.internal("assets/sound/jumpland.mp3"));
-            long idsound = sound.play(1.0f);        
-            //sound.setLooping(idsound, true);
+            long idsound = sound.play(1.0f);                
 	}
     }
 }
