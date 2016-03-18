@@ -226,6 +226,11 @@ public class Scene implements System {
 		DEBUG;
 	
 	/**
+	 * Scene controllers set.
+	 */
+	public final Array<SceneController> controllers = new Array<>();
+	
+	/**
 	 * Scene layers.
 	 */
 	public final Array<Layer> layers = new Array<>();
@@ -268,14 +273,35 @@ public class Scene implements System {
 	 */
 	@Override
 	public void perform() {
+		// dispatch controllers handler
+		for(SceneController ctrl : controllers) {
+			ctrl.prePerform();
+		}
+		
+		// dispatch controllers handler
+		for(SceneController ctrl : controllers) {
+			ctrl.preUpdate(Gdx.graphics.getDeltaTime());
+		}
+		
 		// act actors update
 		for(Layer layer : this.layers) {
 			layer.update(Gdx.graphics.getDeltaTime());
 		}
 		
-		// assign camera projection matrix
+		// dispatch controllers handler
+		for(SceneController ctrl : controllers) {
+			ctrl.postUpdate(Gdx.graphics.getDeltaTime());
+		}
+		
+		// update & assign camera projection matrix
+		camera.update();
 		batch.setProjectionMatrix(camera.combined);
 		gizmo.setProjectionMatrix(camera.combined);
+		
+		// dispatch controllers handler
+		for(SceneController ctrl : controllers) {
+			ctrl.preDraw(batch);
+		}
 		
 		// draw actors' sprites
 		for(Layer layer : this.layers) {
@@ -288,6 +314,11 @@ public class Scene implements System {
 				layer.debug(gizmo);
 			}
 		}
+		
+		// dispatch controllers handler
+		for(SceneController ctrl : controllers) {
+			ctrl.postDraw(batch);
+		}
 	}
 	
 	/**
@@ -295,7 +326,10 @@ public class Scene implements System {
 	 */
 	@Override
 	public void postPerform() {
-		camera.update();
+		// dispatch controllers handler
+		for(SceneController ctrl : controllers) {
+			ctrl.postPerform();
+		}
 	}
 	
 	/**

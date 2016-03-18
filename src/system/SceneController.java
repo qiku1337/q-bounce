@@ -22,19 +22,45 @@
  * THE SOFTWARE.
  */
 package system;
-import com.badlogic.gdx.utils.Disposable;
+
+import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+
 /**
  *
  * @author Qiku
  */
-public interface System extends Disposable {
+public interface SceneController {
 	/**
-	 * System perform action.
+	 * Called before scene system performing.
 	 */
-	public void perform();
+	public void prePerform();
 	
 	/**
-	 * Post system performing action.
+	 * Called after scene system performing.
 	 */
 	public void postPerform();
+	
+	/**
+	 * Called before scene update performing.
+	 * @param delta
+	 */
+	public void preUpdate(float delta);
+	
+	/**
+	 * Called after scene update performing.
+	 * @param delta
+	 */
+	public void postUpdate(float delta);
+	
+	/**
+	 * Called before scene draw performing.
+	 * @param batch
+	 */
+	public void preDraw(SpriteBatch batch);
+	
+	/**
+	 * Called after scene draw performing.
+	 * @param batch
+	 */
+	public void postDraw(SpriteBatch batch);
 }

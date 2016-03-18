@@ -8,7 +8,9 @@ import com.badlogic.gdx.graphics.OrthographicCamera;
 import screens.GameScreen;
 import screens.LoaderScreen;
 import screens.StageScreen;
-//import screens.StageScreen;
+import system.Console;
+import system.ConsoleAction;
+
 import system.Physics;
 
 /*
@@ -29,15 +31,30 @@ public class Game extends com.badlogic.gdx.Game {
 	static public boolean DEBUG_ADDITIONAL = false;
 	
 	/**
+	 * Game configuration filename.
+	 */
+	static public final String CONFIG_FILENAME = "config.cfg";
+	
+	/**
 	 * Game instance.
 	 */
 	static public final Game app = new Game();
+	
+	/**
+	 * Game configuration object.
+	 */
+	static public Config config;
 	
     /**
      * Game main assets manager.
      * Manage game resources such as textures, sounds, musics etc. globally.
      */
     static public AssetManager assets;
+	
+	/**
+	 * Ingame console.
+	 */
+	static public Console console;
 	
 	/**
 	 * Scene system.
@@ -60,10 +77,28 @@ public class Game extends com.badlogic.gdx.Game {
 	static public void performSystems() {
 		Game.physics.perform();
 		Game.scene.perform();
+		Game.console.perform();
 		
-		// post performing
+		// post performing for rendering process
 		Game.physics.postPerform();
 		Game.scene.postPerform();
+		Game.console.postPerform();
+	}
+	
+	/**
+	 * Reconfigure the game settups from the config.
+	 */
+	static public void reConfigure() {
+		Gdx.graphics.setDisplayMode(
+			Game.config.width,
+			Game.config.height,
+			false
+		);
+		
+		// game screen reconfigure
+		if(Game.app.screen instanceof GameScreen) {
+			((GameScreen)Game.app.screen).reConfigure();
+		}
 	}
 	
     /**
@@ -72,10 +107,31 @@ public class Game extends com.badlogic.gdx.Game {
      */
     @Override
     public void create() {
+		// load configuration file
+		Game.config = Config.load(CONFIG_FILENAME, true);
+		Game.reConfigure();
+		
 		// initialize game resources
 		Game.assets = new AssetManager();
+		Game.console = new Console();
 		Game.physics = new Physics();
 		Game.scene = new Scene();
+		
+		// assign input processor with the console
+		Gdx.input.setInputProcessor(Game.console);
+		
+		// add generic console commands
+		Game.console.commands.put("exit", new ConsoleAction() {
+			@Override
+			public String perform(String[] params) {
+				Gdx.app.exit();
+				return "Bye";
+			}
+		});
+		
+		//Game.console.commands.put("cfg", new ConsoleAction() {
+			//@Override			
+		//});
 		
 		// wrap the main camera
 		Game.mainCamera = Game.scene.camera;
@@ -95,6 +151,11 @@ public class Game extends com.badlogic.gdx.Game {
 		}
 		else if(Gdx.input.isKeyJustPressed(Input.Keys.F3)) {
 			Game.DEBUG_ADDITIONAL = !Game.DEBUG_ADDITIONAL;
+		}
+		
+		// allow console access
+		if(Gdx.input.isKeyJustPressed(Input.Keys.GRAVE)) {
+			Game.console.toggle();
 		}
 		
 		// change debug lines width

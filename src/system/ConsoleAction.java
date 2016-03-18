@@ -22,19 +22,11 @@
  * THE SOFTWARE.
  */
 package system;
-import com.badlogic.gdx.utils.Disposable;
+
 /**
  *
  * @author Qiku
  */
-public interface System extends Disposable {
-	/**
-	 * System perform action.
-	 */
-	public void perform();
-	
-	/**
-	 * Post system performing action.
-	 */
-	public void postPerform();
+public interface ConsoleAction {
+	public String perform(String[] params);
 }
