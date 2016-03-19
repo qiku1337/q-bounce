@@ -40,6 +40,7 @@ import com.badlogic.gdx.physics.box2d.Fixture;
 import controllers.CameraController;
 import main.Game;
 import system.Physics;
+import system.Debug;
 /**
  *
  * @author Qiku
@@ -98,5 +99,8 @@ public class StageScreen implements GameScreen {
 
 	@Override
 	public void dispose() {
+	}
+        public void load(String filename) {
+		EditorScreen.PropsHolder props = new EditorScreen.PropsHolder();
 	}
 }

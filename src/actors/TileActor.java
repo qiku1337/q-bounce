@@ -37,9 +37,11 @@ import system.Physics;
  * @author Qiku
  */
 public class TileActor extends Actor {
+
 	private final Body body;
 	private final Fixture fixture;
         private Sprite sprite;
+        static public final String TILE_TEXTURE = "assets/Tile.png";
 	
 	public TileActor(int id) {
 		super(id);
@@ -72,4 +74,11 @@ public class TileActor extends Actor {
 		sprite.draw(batch);
 		batch.end();
 	}
+        public static void preload() {
+            Game.assets.load(TILE_TEXTURE, Texture.class);
+        }
+        @Override
+            public void dispose(){
+        Game.physics.world.destroyBody(body);       
+    }
 }

@@ -1,0 +1,20 @@
+{
+props: [
+	{
+		class: "editor.TileProp",
+		id: 0,
+		position: {
+			x: 68.40004,
+			y: 159.6
+		}
+	},
+	{
+		class: "editor.TileProp",
+		id: 0,
+		position: {
+			x: 10,
+			y: 100
+		}
+	}
+]
+}

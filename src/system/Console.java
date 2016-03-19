@@ -62,12 +62,12 @@ public class Console implements System, InputProcessor {
 	/**
 	 * Height of the console.
 	 */
-	private float height = 50.f;
+	private float height = 80.f;
 	
 	/**
 	 * Color of the console background.
 	 */
-	private Color color = new Color(0.f, 0.f, 0.f, 1.f);
+	private Color color = new Color(0.5f, 0.f, 0.1f, 0.8f);
 	
 	/**
 	 * Process the console input.

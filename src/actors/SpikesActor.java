@@ -40,6 +40,7 @@ public class SpikesActor extends Actor {
 	private final Body body;
 	private final Fixture fixture;
         private Sprite sprite;
+        static public final String SPIKES_TEXTURE = "assets/spike_A.png";
 	
 	public SpikesActor(int id) {
 		super(id);
@@ -72,4 +73,11 @@ public class SpikesActor extends Actor {
 		sprite.draw(batch);
 		batch.end();
 	}
+        public static void preload() {
+            Game.assets.load(SPIKES_TEXTURE, Texture.class);
+        }
+        @Override
+            public void dispose(){
+        Game.physics.world.destroyBody(body);       
+    }
 }

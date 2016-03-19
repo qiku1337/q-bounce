@@ -40,6 +40,7 @@ public class GroundActor extends Actor {
 	private final Body body;
 	private final Fixture fixture;
 	private Sprite sprGround;
+        static public final String GROUND_TEXTURE = "assets/Tile.png";
         
 	public GroundActor(int id) {
 		super(id);
@@ -74,5 +75,12 @@ public class GroundActor extends Actor {
 		sprGround.draw(batch);
 		batch.end();        	
         }
+        public static void preload() {
+            Game.assets.load(GROUND_TEXTURE, Texture.class);
+        }
+        @Override
+            public void dispose(){
+        Game.physics.world.destroyBody(body);       
+    }
  }
 

@@ -59,6 +59,7 @@ public class CameraController implements SceneController {
 	 * Aktor musi miec nadpisana metode Actor#getPosition()
 	 */
 	public Actor follow = null;
+        private boolean changecam = false;
         
 	/**
 	 * Wykonuje sie przed jakakolwiek aktualizacja sceny.
@@ -90,8 +91,8 @@ public class CameraController implements SceneController {
 	 */
 	@Override
 	public void preUpdate(float delta) {            
-		if(Gdx.input.isKeyJustPressed(Input.Keys.SPACE)) {
-
+		if(Gdx.input.isKeyJustPressed(Input.Keys.C)) {
+                    changecam = !changecam;
 		}
 	}
 
@@ -103,7 +104,7 @@ public class CameraController implements SceneController {
 	@Override
 	public void postUpdate(float delta) {
 		// wolna kamera
-		if(follow == null || followType == FOLLOW_STATIC) {
+		if(!changecam) {
                             Game.mainCamera.position.set(
                                     BounceActor.x,
                                     BounceActor.y,
@@ -111,9 +112,23 @@ public class CameraController implements SceneController {
                             );
                             Game.mainCamera.update();
 		} else {
-
-		}
-	}
+                     if(Gdx.input.isButtonPressed(Input.Buttons.RIGHT)) {
+				Game.mainCamera.translate(
+					-(float)Gdx.input.getDeltaX() * 2.f *
+                                                Game.mainCamera.zoom,
+					(float)Gdx.input.getDeltaY() * 2.f *
+                                                Game.mainCamera.zoom
+				);
+                                Game.mainCamera.update();
+                    }
+                    if(Gdx.input.isKeyPressed(Input.Keys.Z)) {
+                                Game.mainCamera.zoom+=0.01f;
+                    }
+                    if(Gdx.input.isKeyPressed(Input.Keys.X)) {
+                                Game.mainCamera.zoom-=0.01f;
+                    } 
+                }
+        }
 
 	/**
 	 * Wykonuje sie przed rysowaniem sceny.

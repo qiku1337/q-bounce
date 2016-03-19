@@ -5,6 +5,7 @@ import com.badlogic.gdx.Input;
 import system.Scene;
 import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.graphics.OrthographicCamera;
+import screens.EditorScreen;
 import screens.GameScreen;
 import screens.LoaderScreen;
 import screens.StageScreen;
@@ -70,6 +71,7 @@ public class Game extends com.badlogic.gdx.Game {
 	 * Main camera wrapper.
 	 */
 	static public OrthographicCamera mainCamera;
+        public static String LEVELS_PATH="assets/levels/";
 	
 	/**
 	 * Perform systems.
@@ -128,6 +130,28 @@ public class Game extends com.badlogic.gdx.Game {
 				return "Bye";
 			}
 		});
+		Game.console.commands.put("restart", new ConsoleAction() {
+			@Override
+			public String perform(String[] params) {
+				if(screen instanceof GameScreen) {
+					Game.app.setNextScreen((GameScreen)screen);
+					return "Scene restarting...";
+				}
+				
+				return "Nothing to restart";
+			}
+		});
+                Game.console.commands.put("edit", new ConsoleAction() {
+			@Override
+			public String perform(String[] params) {
+				if(params.length == 2) {
+					Game.app.setNextScreen(new EditorScreen(params[1]));
+					return "Open scene editor for '" + params[1] + "'";
+				}
+				return "level name";
+			}
+		});
+                
 		
 		//Game.console.commands.put("cfg", new ConsoleAction() {
 			//@Override			

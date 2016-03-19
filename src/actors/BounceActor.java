@@ -150,14 +150,7 @@ public class BounceActor extends Actor {
             if(body.getLinearVelocity().len()<2.1f){               
             moveleft();
             }
-        }
-        if(Gdx.input.isKeyPressed(Input.Keys.Z)) {
-                Game.mainCamera.zoom+=0.01f;
-        }
-        if(Gdx.input.isKeyPressed(Input.Keys.X)) {
-                Game.mainCamera.zoom-=0.01f;
-        }
-        
+        }        
         //reset frame if stop moving
         if(body.getLinearVelocity().len()<1.8f){
             frame=0;
