@@ -21,60 +21,34 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package system;
-
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
-import com.badlogic.gdx.utils.Disposable;
-
+import controllers.GUIController;
+import scene.Actor;
 /**
  *
  * @author Qiku
  */
-public interface SceneController extends Disposable {
-	/**
-	 * Called before scene system performing.
-	 */
-	public void prePerform();
+public class GUIActor extends Actor {
+	private final GUIController gui;
 	
 	/**
-	 * Called after scene system performing.
+	 * Ctor.
+	 * @param id Unique actor identifier.
+	 * @param gui GUI controller.
 	 */
-	public void postPerform();
+	public GUIActor(int id, GUIController gui) {
+		super(id);
+		this.gui = gui;
+	}
 	
 	/**
-	 * Called before scene update performing.
-	 * @param delta
-	 */
-	public void preUpdate(float delta);
-	
-	/**
-	 * Called after scene update performing.
-	 * @param delta
-	 */
-	public void postUpdate(float delta);
-	
-	/**
-	 * Called before scene draw performing.
+	 * {@inheritDoc} 
 	 * @param batch
 	 */
-	public void preDraw(SpriteBatch batch);
-	
-	/**
-	 * Called after scene draw performing.
-	 * @param batch
-	 */
-	public void postDraw(SpriteBatch batch);
-	
-	/**
-	 * Called before scene debugging information draw performing.
-	 * @param gizmo
-	 */
-	public void preDebug(ShapeRenderer gizmo);
-	
-	/**
-	 * Called after scene debugging information draw performing.
-	 * @param gizmo
-	 */
-	public void postDebug(ShapeRenderer gizmo);
+	@Override
+	public void draw(SpriteBatch batch) {
+		if(gui != null) {
+			gui.draw(batch);
+		}
+	}
 }

@@ -21,60 +21,17 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package system;
-
-import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
-import com.badlogic.gdx.utils.Disposable;
+package gui;
 
 /**
  *
  * @author Qiku
  */
-public interface SceneController extends Disposable {
+public interface ButtonAction {
 	/**
-	 * Called before scene system performing.
+	 * Dispatched on button action.
+	 * @param button
+	 * @param userData 
 	 */
-	public void prePerform();
-	
-	/**
-	 * Called after scene system performing.
-	 */
-	public void postPerform();
-	
-	/**
-	 * Called before scene update performing.
-	 * @param delta
-	 */
-	public void preUpdate(float delta);
-	
-	/**
-	 * Called after scene update performing.
-	 * @param delta
-	 */
-	public void postUpdate(float delta);
-	
-	/**
-	 * Called before scene draw performing.
-	 * @param batch
-	 */
-	public void preDraw(SpriteBatch batch);
-	
-	/**
-	 * Called after scene draw performing.
-	 * @param batch
-	 */
-	public void postDraw(SpriteBatch batch);
-	
-	/**
-	 * Called before scene debugging information draw performing.
-	 * @param gizmo
-	 */
-	public void preDebug(ShapeRenderer gizmo);
-	
-	/**
-	 * Called after scene debugging information draw performing.
-	 * @param gizmo
-	 */
-	public void postDebug(ShapeRenderer gizmo);
+	public void actionPerformed(GUIButtonElement button, Object userData);
 }

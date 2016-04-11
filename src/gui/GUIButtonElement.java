@@ -21,60 +21,41 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package system;
-
-import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
-import com.badlogic.gdx.utils.Disposable;
-
+package gui;
+import com.badlogic.gdx.graphics.g2d.BitmapFont;
+import com.badlogic.gdx.math.Vector2;
 /**
  *
  * @author Qiku
  */
-public interface SceneController extends Disposable {
+public class GUIButtonElement extends GUILabelElement {
 	/**
-	 * Called before scene system performing.
+	 * Action user data.
 	 */
-	public void prePerform();
+	public Object userData;
 	
 	/**
-	 * Called after scene system performing.
+	 * Button action listener.
 	 */
-	public void postPerform();
+	public ButtonAction actionListener;
 	
 	/**
-	 * Called before scene update performing.
-	 * @param delta
+	 * Ctor.
+	 * @param text
+	 * @param position
+	 * @param font 
 	 */
-	public void preUpdate(float delta);
+	public GUIButtonElement(String text, Vector2 position, BitmapFont font) {
+		super(text, position, font);
+	}
 	
 	/**
-	 * Called after scene update performing.
-	 * @param delta
+	 * Action performing.
 	 */
-	public void postUpdate(float delta);
-	
-	/**
-	 * Called before scene draw performing.
-	 * @param batch
-	 */
-	public void preDraw(SpriteBatch batch);
-	
-	/**
-	 * Called after scene draw performing.
-	 * @param batch
-	 */
-	public void postDraw(SpriteBatch batch);
-	
-	/**
-	 * Called before scene debugging information draw performing.
-	 * @param gizmo
-	 */
-	public void preDebug(ShapeRenderer gizmo);
-	
-	/**
-	 * Called after scene debugging information draw performing.
-	 * @param gizmo
-	 */
-	public void postDebug(ShapeRenderer gizmo);
+	@Override
+	public void action() {
+		if(actionListener != null) {
+			actionListener.actionPerformed(this, userData);
+		}
+	}
 }

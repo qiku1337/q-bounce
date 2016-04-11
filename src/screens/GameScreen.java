@@ -29,7 +29,7 @@ import main.Game;
 /**
  * Base game screen.
  * Provides `prepare` method to be performed by the loader screen.
- * @author Konrad Nowakowski https://github.com/konrad92
+ * @author Qiku https://github.com/qiku1337
  */
 public interface GameScreen extends Screen {
     /**

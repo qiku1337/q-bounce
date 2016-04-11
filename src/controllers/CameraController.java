@@ -22,22 +22,30 @@
  * THE SOFTWARE.
  */
 package controllers;
+import actors.BounceActor;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
+import com.badlogic.gdx.InputAdapter;
+import com.badlogic.gdx.InputProcessor;
+import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
+import com.badlogic.gdx.math.Rectangle;
+import com.badlogic.gdx.math.Vector2;
 import main.Game;
-import actors.BounceActor;
 import scene.Actor;
+import system.Debug;
 import system.SceneController;
 /**
  *
  * @author Qiku
  */
-public class CameraController implements SceneController {
+public class CameraController extends InputAdapter implements SceneController {
 	/**
 	 * Rodzaje podazania kamery za aktorami.
 	 * FOLLOW_STATIC - statycznie podaza za aktorem.
 	 */
+        public static final Rectangle SCREEN_BOUNDS = new Rectangle(-1536.f, 0.f, 3072.f, 2048.f);
 	static public final int
 		FOLLOW_STATIC = 0, // "twarde" przypisanie do aktora
 		FOLLOW_TRACING = 1, // sledzi aktora
@@ -60,20 +68,21 @@ public class CameraController implements SceneController {
 	 */
 	public Actor follow = null;
         private boolean changecam = false;
-        
+        public final OrthographicCamera camera = new OrthographicCamera();
 	/**
 	 * Wykonuje sie przed jakakolwiek aktualizacja sceny.
 	 * @see SceneController#prePerform() 
 	 */
         public CameraController(){
-            	Game.mainCamera.setToOrtho(false);
-                //Game.mainCamera.translate(0.f, 0.f);
-                Game.mainCamera.zoom =0.6f;
-                Game.mainCamera.update();
+		camera.setToOrtho(false);
+		camera.translate(
+			-(float)(Gdx.graphics.getWidth()/2),
+			-(float)(Gdx.graphics.getHeight()/2)
+		);
         }
 	@Override
 	public void prePerform() {
-            
+            Game.mainCamera = camera;
 	}
 
 	/**
@@ -82,6 +91,10 @@ public class CameraController implements SceneController {
 	 */
 	@Override
 	public void postPerform() {
+            	Vector2 rounded = new Vector2(
+			(float)Math.floor(camera.position.x),
+			(float)Math.floor(camera.position.y)
+		);
 	}
 
 	/**
@@ -137,6 +150,11 @@ public class CameraController implements SceneController {
 	 */
 	@Override
 	public void preDraw(SpriteBatch batch) {
+            	// update camera projection matrix
+		camera.update();
+		
+		// setup camera projection
+		batch.setProjectionMatrix(camera.combined);
 	}
 
 	/**
@@ -147,11 +165,19 @@ public class CameraController implements SceneController {
 	@Override
 	public void postDraw(SpriteBatch batch) {
 	}
-
-	/**
-	 * Podczas zwalniania kontrollera ze sceny.
-	 * @see Disposable#dispose() 
-	 */
+	public void preDebug(ShapeRenderer gizmo) {
+		gizmo.setProjectionMatrix(camera.combined);
+	}
+	public void postDebug(ShapeRenderer gizmo) {
+	}
 	public void dispose() {
+		Game.mainCamera = null;
+		
+		// restart scene camera
+		camera.setToOrtho(false);
+		camera.translate(
+			-(float)(Gdx.graphics.getWidth()/2),
+			-(float)(Gdx.graphics.getHeight()/2)
+		);
 	}
 }

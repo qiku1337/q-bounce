@@ -217,5 +217,8 @@ public class BounceActor extends Actor {
             sound = Gdx.audio.newSound(Gdx.files.internal("assets/sound/jumpland.mp3"));
             long idsound = sound.play(1.0f);                
 	}
+        if(actor instanceof SpikesActor) {
+             this.remove();
+        }
     }
 }

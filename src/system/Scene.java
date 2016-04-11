@@ -26,6 +26,7 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
+import com.badlogic.gdx.math.Matrix4;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.Disposable;
 import java.util.Iterator;
@@ -50,6 +51,12 @@ public class Scene implements System {
 		 * Actors on the layer.
 		 */
 		public final Array<Actor> actors = new Array<>();
+		
+		/**
+		 * Camera assigned with the layer.
+		 * Used to manualy assign new cameras.
+		 */
+		public OrthographicCamera camera = null;
 		
 		/**
 		 * Actors to perform adding to the layer.
@@ -93,7 +100,7 @@ public class Scene implements System {
 			Layer realLayer = actor.getLayer();
 			
 			// remove actor from assigned layer, nor current
-			if(realLayer != null) {
+			if(realLayer != null && realLayer.actors.contains(actor, true)) {
 				if(!realLayer.toRemove.contains(actor, true)) {
 					realLayer.toRemove.add(actor);
 					return true;
@@ -142,10 +149,27 @@ public class Scene implements System {
 		 * @param batch Sprite batch as rendering target.
 		 */
 		public void draw(SpriteBatch batch) {
+			Matrix4 oldProjection = null;
+			
+			// use the layer camera
+			if(camera != null) {
+				camera.update();
+				
+				// swap the camera projections
+				oldProjection = batch.getProjectionMatrix();
+				batch.setProjectionMatrix(camera.combined);
+			}
+			
+			// draw-up the actors
 			for(Actor actor : actors) {
 				if(actor.active && actor.visible) {
 					actor.draw(batch);
 				}
+			}
+			
+			// reverse old camera projection
+			if(oldProjection != null) {
+				batch.setProjectionMatrix(oldProjection);
 			}
 		}
 		
@@ -156,7 +180,7 @@ public class Scene implements System {
 		 */
 		public void debug(ShapeRenderer gizmo) {
 			for(Actor actor : this.actors) {
-				//actor.debug(gizmo);
+				actor.debug(gizmo);
 			}
 		}
 		
@@ -246,18 +270,9 @@ public class Scene implements System {
 	public final ShapeRenderer gizmo = new ShapeRenderer();
 	
 	/**
-	 * Scene orthographic camera.
-	 */
-	public final OrthographicCamera camera = new OrthographicCamera();
-	
-	/**
 	 * Ctor.
 	 */
 	public Scene() {
-		// init orthographic camera
-		this.camera.setToOrtho(true);
-		this.camera.update();
-		
 		// create generic layers
 		this.BACKGROUND = new Layer(this);
 		this.ACTION_1 = new Layer(this);
@@ -293,11 +308,6 @@ public class Scene implements System {
 			ctrl.postUpdate(Gdx.graphics.getDeltaTime());
 		}
 		
-		// update & assign camera projection matrix
-		camera.update();
-		batch.setProjectionMatrix(camera.combined);
-		gizmo.setProjectionMatrix(camera.combined);
-		
 		// dispatch controllers handler
 		for(SceneController ctrl : controllers) {
 			ctrl.preDraw(batch);
@@ -306,6 +316,16 @@ public class Scene implements System {
 		// draw actors' sprites
 		for(Layer layer : this.layers) {
 			layer.draw(batch);
+		}
+		
+		// dispatch controllers handler
+		for(SceneController ctrl : controllers) {
+			ctrl.postDraw(batch);
+		}
+		
+		// dispatch controllers handler
+		for(SceneController ctrl : controllers) {
+			ctrl.preDebug(gizmo);
 		}
 		
 		// draw scene debug information
@@ -317,7 +337,7 @@ public class Scene implements System {
 		
 		// dispatch controllers handler
 		for(SceneController ctrl : controllers) {
-			ctrl.postDraw(batch);
+			ctrl.postDebug(gizmo);
 		}
 	}
 	
@@ -332,13 +352,34 @@ public class Scene implements System {
 		}
 	}
 	
+	
 	/**
 	 * Clear-up the scene with the generic layers create.
+	 * Dispose the scene controllers ahead.
 	 */
 	public void clear() {
+		this.clear(true);
+	}
+	
+	/**
+	 * Clear-up the scene with the generic layers create.
+	 * @param clearControllers Clean-up for scene controllers.
+	 */
+	public void clear(boolean clearControllers) {
 		// clear up the layers
 		for(Layer layer : this.layers) {
 			layer.dispose();
+		}
+		
+		// clear controllers from the scene
+		if(clearControllers) {
+			// dispose controllers
+			for(SceneController ctrl : controllers) {
+				ctrl.dispose();
+			}
+			
+			// slear the stack
+			controllers.clear();
 		}
 	}
 
@@ -349,6 +390,11 @@ public class Scene implements System {
 	public void dispose() {
 		// clearup the scene
 		this.clear();
+		
+		// dispose controllers
+		for(SceneController ctrl : controllers) {
+			ctrl.dispose();
+		}
 		
 		// dispose the scene
 		this.gizmo.dispose();

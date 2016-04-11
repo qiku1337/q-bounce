@@ -22,6 +22,7 @@
  * THE SOFTWARE.
  */
 package editor;
+import actors.TileActor;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 /**
@@ -33,9 +34,17 @@ public class TileProp extends PropSerialized {
 	 * Draw the turret radius as bounds.
 	 * @param gizmo 
 	 */
+    	public TileProp() {
+		this.layer = 2;
+	}
 	@Override
 	public void draw(ShapeRenderer gizmo) {
 		gizmo.setColor(Color.YELLOW);
 		gizmo.circle(position.x, position.y, 32.f);
+	}
+
+	@Override
+	public Class<? extends PropActor> getActorClass() {
+		return TileActor.class;
 	}
 }

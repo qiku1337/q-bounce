@@ -21,60 +21,35 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package system;
-
-import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
-import com.badlogic.gdx.utils.Disposable;
+package gui;
 
 /**
  *
  * @author Qiku
  */
-public interface SceneController extends Disposable {
+public interface GUIActionListener {
 	/**
-	 * Called before scene system performing.
+	 * Dispatched on cursor enters over the element.
+	 * @param element GUI target element.
 	 */
-	public void prePerform();
+	public void enter(GUIElement element);
 	
 	/**
-	 * Called after scene system performing.
+	 * Dispatched on cursor leaves the element.
+	 * @param element GUI target element.
 	 */
-	public void postPerform();
+	public void leave(GUIElement element);
 	
 	/**
-	 * Called before scene update performing.
-	 * @param delta
+	 * Dispatched on action performed.
+	 * Basic befaviour means single mouse click over the element.
+	 * @param element GUI target element.
 	 */
-	public void preUpdate(float delta);
+	public void action(GUIElement element);
 	
 	/**
-	 * Called after scene update performing.
-	 * @param delta
+	 * Dispatched on focused keyboard typing.
+	 * @param element GUI target element.
 	 */
-	public void postUpdate(float delta);
-	
-	/**
-	 * Called before scene draw performing.
-	 * @param batch
-	 */
-	public void preDraw(SpriteBatch batch);
-	
-	/**
-	 * Called after scene draw performing.
-	 * @param batch
-	 */
-	public void postDraw(SpriteBatch batch);
-	
-	/**
-	 * Called before scene debugging information draw performing.
-	 * @param gizmo
-	 */
-	public void preDebug(ShapeRenderer gizmo);
-	
-	/**
-	 * Called after scene debugging information draw performing.
-	 * @param gizmo
-	 */
-	public void postDebug(ShapeRenderer gizmo);
+	public void typed(GUIElement element);
 }

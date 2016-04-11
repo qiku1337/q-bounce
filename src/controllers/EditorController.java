@@ -22,31 +22,41 @@
  * THE SOFTWARE.
  */
 package controllers;
-import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.Input;
+import com.badlogic.gdx.InputAdapter;
+import java.lang.reflect.Field;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
-import com.badlogic.gdx.math.collision.Ray;
 import com.badlogic.gdx.utils.Array;
+import editor.PropHolder;
 import main.Game;
 import editor.PropSerialized;
-import screens.EditorScreen;
+import editor.TileProp;
+import gui.ButtonAction;
+import gui.GUIButtonElement;
+import gui.GUIElement;
+import gui.GUIFieldElement;
 import system.ConsoleAction;
-import system.Debug;
 import system.SceneController;
 /**
  *
  * @author Qiku
  */
-public class EditorController implements SceneController {
+public class EditorController extends InputAdapter implements SceneController {
 	/**
-	 * Editor screen assigned with the controller.
+	 * Currently editing level file.
 	 */
-	private final EditorScreen editor;
+	public final String filename;
+	
+	/**
+	 * Editor's GUI controller.
+	 */
+	public final GUIController gui = new GUIController();
 	
 	/**
 	 * Font using for drawing named scene elements.
@@ -54,153 +64,410 @@ public class EditorController implements SceneController {
 	private final BitmapFont font = new BitmapFont();
 	
 	/**
-	 * Property selection.
+	 * Gizmo renderer.
 	 */
-	private PropSerialized nearly, selected;
+	private final ShapeRenderer gizmo = Game.scene.gizmo;
 	
 	/**
-	 * State flag.
+	 * Property selection.
 	 */
-	private boolean singleClicked = false,
-					propDragged = false;
+	private PropSerialized nearly, selected, drag;
+	
+	/**
+	 * Editor property holder.
+	 */
+	private PropHolder propHolder;
+	
+	/**
+	 * Dynamic editor GUI elements.
+	 */
+	private final Array<GUIElement> dynamicElements = new Array<>();
 	
 	/**
 	 * Ctor.
-	 * @param editor 
+	 * @param filename Propsfile to edit.
 	 */
-	public EditorController(EditorScreen editor) {
-		this.editor = editor;
+	public EditorController(String filename) {
+		// editing filename
+		this.filename = filename;
 		
-		/**
-		 * Allow edited scnee processing.
-		 */
+		// load the propsfile
+		this.loadPropHolder();
+		
+		// add editor buttons
+		Array<Class<? extends PropSerialized>> propClasses = new Array<>();
+		propClasses.addAll(
+			TileProp.class
+		);
+		
+		// create button action
+		ButtonAction createAction = new ButtonAction() {
+			@Override
+			public void actionPerformed(GUIButtonElement button, Object userData) {
+				CreatePropAction pair = (CreatePropAction)userData;
+				try {
+					PropSerialized serialized = pair.propClass.newInstance();
+					serialized.position.set(
+						Game.mainCamera.position.x,
+						Game.mainCamera.position.y
+					);
+					
+					pair.ctrl.propHolder.props.add(serialized);
+				} catch (InstantiationException | IllegalAccessException ex) {
+					Logger.getLogger(EditorController.class.getName()).log(Level.SEVERE, null, ex);
+				}
+			}
+		};
+		
+		ButtonAction destroyAction = new ButtonAction() {
+			@Override
+			public void actionPerformed(GUIButtonElement button, Object userData) {
+				DestroyPropAction action = (DestroyPropAction)userData;
+				if(action != null) {
+					action.ctrl.propHolder.props.removeValue(
+						action.ctrl.selected, true
+					);
+				}
+			}
+		};
+		
+		// destroy prop button
+		Vector2 position = new Vector2(5.f, 5.f);
+		GUIButtonElement button = new GUIButtonElement("Delete", position, font);
+		button.screenSpace = GUIElement.ScreenSpace.BottomRight;
+		button.anchor = GUIElement.Anchor.BottomRight;
+		button.actionListener = destroyAction;
+		button.userData = new DestroyPropAction(this);
+
+		// add the button to the GUI
+		//gui.guiElements.elements.add(button);
+		position.y += 20.f;
+		
+		// build editor buttons
+		for(Class<? extends PropSerialized> propClass : propClasses) {
+			button = new GUIButtonElement(propClass.getSimpleName(), position, font);
+			button.screenSpace = GUIElement.ScreenSpace.BottomRight;
+			button.anchor = GUIElement.Anchor.BottomRight;
+			button.actionListener = createAction;
+			button.userData = new CreatePropAction(this, propClass);
+			
+			// add the button to the GUI
+			//gui.guiElements.elements.add(button);
+			position.y += 20.f;
+		}
+		
+		// add the editor console commands.
 		Game.console.commands.put("edit", new ConsoleAction() {
 			@Override
 			public String perform(String[] params) {
-				// edit save|load
-				if(params.length == 2) {
-					if(params[1].equals("save")) {
-						editor.save();
-						return "Saving scene... '" + editor.filename + "'";
-					} else if(params[1].equals("reload")) {
-						editor.load();
-						return "Reloading scene... '" + editor.filename + "'";
+				EditorController editor = null;
+				
+				// lookup for editor controller
+				for(SceneController ctrl : Game.scene.controllers) {
+					if(ctrl instanceof EditorController) {
+						editor = (EditorController)ctrl;
+						break;
 					}
 				}
 				
-				return "edit save|reload";
+				// edit save|load
+				if(editor != null && params.length == 2) {
+					switch (params[1]) {
+					case "save":
+						editor.savePropHolder();
+						return "Props scene saved";
+					case "reload":
+						editor.loadPropHolder();
+						return "Props scene reloaded";
+					case "exit":
+						return "Unsupported yet...";
+					}
+				}
+				
+				return "edit save|reload|exit";
 			}
 		});
 	}
 	
+	/**
+	 * Loads propfile from editor filename.
+	 */
+	public void loadPropHolder() {
+		Game.console.logs.add("Loading propsfile... '" + filename + "'");
+		
+		// load props holder instance
+		propHolder = PropHolder.load(filename);
+		
+		if(propHolder == null) {
+			Game.console.logs.add("Propsfile not exists");
+			propHolder = new PropHolder();
+		} else {
+			Game.console.logs.add("Propsfile loaded successfuly");
+		}
+	}
+	
+	/**
+	 * Saves editor prop holder to file.
+	 */
+	public void savePropHolder() {
+		Game.console.logs.add("Saving propsfile... '" + filename + "'");
+		if(PropHolder.save(propHolder, filename)) {
+			Game.console.logs.add("Propsfile saved successfuly!");
+		} else {
+			Game.console.logs.add("Cannot save propsfile!");
+		}
+	}
+	
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public void prePerform() {
 	}
-
+	
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public void postPerform() {
-		// rounded coords
-		Vector2 rounded = new Vector2(
-			(float)Math.floor(Game.mainCamera.position.x),
-			(float)Math.floor(Game.mainCamera.position.y)
-		);
-		
-		// append log information
-		Debug.info.append("World coord: " + rounded + " \n");
 	}
-
+	
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public void preUpdate(float delta) {
-		// get world cursor (in 3D coords)
-		Vector3 origin = Game.mainCamera.getPickRay(
-			Gdx.input.getX(),
-			Gdx.input.getY()
-		).origin;
-		
-		// transform to 2D origin
-		Vector2 origin2D = new Vector2(origin.x, origin.y);
-		
-		// allow editor object selecting
-		nearly = selected;
-		
-		for(PropSerialized prop : editor.props) {
-			if(origin2D.dst(prop.position) < 16.f && selected != prop) {
-				nearly = prop;
-			}
-		}
-		
-		// move the prop (position)
-		if(selected != null && propDragged) {
-			selected.position.add(
-				(float)Gdx.input.getDeltaX() * Game.mainCamera.zoom * 2.f,
-				(float)Gdx.input.getDeltaY() * -Game.mainCamera.zoom * 2.f
-			);
-		}
-		
-		// select the prop
-		if(!singleClicked && Gdx.input.isButtonPressed(Input.Buttons.LEFT)) {
-			// draw the prop
-			if(selected != null && selected.position.dst(origin2D) < 16.f) {
-				propDragged = true;
-			} else {
-				selected = nearly;
-				propDragged = true;
-			}
-			
-			singleClicked = true;
-		} else if(!Gdx.input.isButtonPressed(Input.Buttons.LEFT)) {
-			singleClicked = false;
-			propDragged = false;
-		}
 	}
-
+	
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public void postUpdate(float delta) {
 	}
-
+	
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public void preDraw(SpriteBatch batch) {
 	}
-
+	
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public void postDraw(SpriteBatch batch) {
-		// get the shape renderer
-		ShapeRenderer gizmo = Game.scene.gizmo;
+	}
+	
+	/**
+	 * {@inheritDoc}
+	 */
+	public void preDebug(ShapeRenderer gizmo) {
+	}
+	
+	/**
+	 * {@inheritDoc}
+	 */
+	public void postDebug(ShapeRenderer gizmo) {
+	}
+	
+	/**
+	 * {@inheritDoc}
+	 */
+	public void dispose() {
+		// flush the editor commands...
+		Game.console.commands.remove("edit");
+		
+		// dispose editor resources
+		font.dispose();
+	}
+	
+	/**
+	 * Draw the editor elements.
+	 * @param batch
+	 */
+	public void draw(SpriteBatch batch) {
+		// draw editor simple shapes
+		gizmo.begin(ShapeRenderer.ShapeType.Line);
+		
+		// draw scene regions
+		gizmo.setColor(Color.CYAN);
+                /*		gizmo.rect(
+                CameraController.SCREEN_BOUNDS.x,
+                CameraController.SCREEN_BOUNDS.y,
+                CameraController.SCREEN_BOUNDS.width,
+                CameraController.SCREEN_BOUNDS.height
+                );*/
 		
 		// draw-up the editor props
-		gizmo.begin(ShapeRenderer.ShapeType.Line);
-		for(PropSerialized prop : editor.props) {
+		for(PropSerialized prop : propHolder.props) {
+			// draw-up the prop bounds
 			prop.draw(gizmo);
-			if(prop == selected) {
-				gizmo.setColor(Color.GREEN);
-			} else if(prop == nearly) {
-				gizmo.setColor(Color.PINK);
-			} else {
+			
+			// draw the prop indicator
+			if(nearly == prop || selected == prop) {
 				gizmo.setColor(Color.RED);
+			} else {
+				gizmo.setColor(Color.PINK);
 			}
 			gizmo.circle(prop.position.x, prop.position.y, 16.f);
 		}
 		gizmo.end();
 		
-		// draw-up the named props
+		// draw-up the props names
 		batch.begin();
+		font.setColor(Color.WHITE);
 		font.setScale(Game.mainCamera.zoom);
-		for(PropSerialized prop : editor.props) {
-			font.draw(batch, prop.getClass().toString(),
-				prop.position.x,
-				prop.position.y
+		for(PropSerialized prop : propHolder.props) {
+			// fetch for prop name
+			String name = prop.getClass().getSimpleName() + ": " + prop.id;
+			
+			// layer name
+			switch(prop.layer) {
+				case 1: name += " (ACTION_1)"; break;
+				case 2: name += " (ACTION_2)"; break;
+				case 3: name += " (ACTION_3)"; break;
+				case 4: name += " (FOREGROUND)"; break;
+				case 5: name += " (GUI)"; break;
+				case 6: name += " (DEBUG)"; break;
+				default: name += " (BACKGROUND)";
+			}
+			
+			// text bounds
+			BitmapFont.TextBounds bounds = font.getBounds(name);
+			
+			// draw-up the prop name
+			font.draw(batch, name,
+				prop.position.x - bounds.width/2,
+				prop.position.y + bounds.height + 24.f
 			);
 		}
+		font.setScale(1);
 		batch.end();
 	}
-
-	public void preDebug(ShapeRenderer gizmo) {
+	
+	/**
+	 * Focus given element.
+	 * @param screenX
+	 * @param screenY
+	 * @param pointer
+	 * @param button
+	 * @return 
+	 */
+	@Override
+	public boolean touchDown(int screenX, int screenY, int pointer, int button) {
+		if(button == 0) {
+			selected = nearly;
+			drag = selected;
+			
+			// remove old dynamic elements
+			//gui.guiElements.elements.removeAll(dynamicElements, true);
+			dynamicElements.clear();
+			
+			// recreate fields
+			if(selected != null) {
+				Vector2 position = new Vector2(5.f, 5.f);
+				for(Field field : selected.getClass().getFields()) {
+					switch(field.getType().getTypeName()) {
+						case "float":
+						case "int":
+						case "boolean":
+						case "java.lang.String":
+							dynamicElements.add(new GUIFieldElement(field, selected, position, font));
+							position.y += 20.f;
+					}
+				}
+				
+				// add dynamic elements to GUI stack
+				//gui.guiElements.elements.addAll(dynamicElements);
+			}
+		}
+		
+		return drag != null;
 	}
-
-	public void postDebug(ShapeRenderer gizmo) {
+	
+	/**
+	 * Makes props draggable.
+	 * @param screenX
+	 * @param screenY
+	 * @param button
+	 * @return 
+	 */
+	@Override
+	public boolean touchDragged(int screenX, int screenY, int button) {
+		if(drag != null) {
+			Vector3 worldCursor = Game.mainCamera.unproject(
+				new Vector3(screenX, screenY, 0)
+			);
+			
+			drag.position.set(new Vector2(
+				worldCursor.x,
+				worldCursor.y
+			));
+		}
+		
+		return drag != null;
 	}
-
-	public void dispose() {
-		Game.console.commands.remove("edit");
+	/**
+	 * Drop active prop.
+	 * @param screenX
+	 * @param screenY
+	 * @param pointer
+	 * @param button
+	 * @return 
+	 */
+	@Override
+	public boolean touchUp(int screenX, int screenY, int pointer, int button) {
+		drag = null;
+		return false;
+	}
+	
+	/**
+	 * Hover curosr over the elements.
+	 * @param screenX
+	 * @param screenY
+	 * @return 
+	 */
+	@Override
+	public boolean mouseMoved (int screenX, int screenY) {
+		Vector3 worldCursor = Game.mainCamera.unproject(
+			new Vector3(screenX, screenY, 0)
+		);
+		
+		// dragging
+		if(drag == null) {
+			// lookup for near prop
+			nearly = propHolder.getPropAt(new Vector2(
+				worldCursor.x,
+				worldCursor.y
+			), 16.f);
+		}
+		
+		return nearly != null;
+	}
+	
+	/**
+	 * Create prop pair for the button action.
+	 */
+	private static class CreatePropAction {
+		public final EditorController ctrl;
+		public final Class<? extends PropSerialized> propClass;
+		
+		public CreatePropAction(EditorController ctrl, Class<? extends PropSerialized> propClass) {
+			this.ctrl = ctrl;
+			this.propClass = propClass;
+		}
+	}
+	
+	/**
+	 * Destroy prop pair for the button action.
+	 */
+	private static class DestroyPropAction {
+		public final EditorController ctrl;
+		
+		public DestroyPropAction(EditorController ctrl) {
+			this.ctrl = ctrl;
+		}
 	}
 }

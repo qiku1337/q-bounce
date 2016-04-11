@@ -43,18 +43,6 @@ public class PropHolder implements Iterable<PropSerialized> {
 	public final Array<PropSerialized> props = new Array<>();
 	
 	/**
-	 * Sort the props by ID.
-	 */
-	public void sort() {
-		props.sort(new Comparator<PropSerialized>() {
-			@Override
-			public int compare(PropSerialized o1, PropSerialized o2) {
-				return o1.id - o2.id;
-			}
-		});
-	}
-	
-	/**
 	 * {@inheritDoc}
 	 */
 	@Override

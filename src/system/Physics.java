@@ -104,7 +104,15 @@ public class Physics implements System, ContactListener {
 	public void postPerform() {
 		if(Game.DEBUG_INFO) {
 			// scale `world to screen`
-			Matrix4 projMatrix = Game.mainCamera.combined.cpy();
+			Matrix4 projMatrix;
+			if(Game.mainCamera != null) {
+				projMatrix = Game.mainCamera.combined.cpy();
+			} else {
+				projMatrix = new Matrix4().setToOrtho2D(0.f, 0.f,
+					Gdx.graphics.getWidth(),
+					Gdx.graphics.getHeight()
+				);
+			}
 			projMatrix.scl(SCALE_INV);
 			
 			// perform debug rendering

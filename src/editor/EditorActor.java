@@ -21,60 +21,36 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package system;
+package editor;
 
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
-import com.badlogic.gdx.utils.Disposable;
-
+import controllers.EditorController;
+import scene.Actor;
 /**
  *
  * @author Qiku
  */
-public interface SceneController extends Disposable {
-	/**
-	 * Called before scene system performing.
-	 */
-	public void prePerform();
+public class EditorActor extends Actor {
+	private final EditorController editor;
 	
 	/**
-	 * Called after scene system performing.
+	 * Ctor.
+	 * @param id Unique actor identifier.
+	 * @param editor Editor controller.
 	 */
-	public void postPerform();
+	public EditorActor(int id, EditorController editor) {
+		super(id, TYPE_EDITOR);
+		this.editor = editor;
+	}
 	
 	/**
-	 * Called before scene update performing.
-	 * @param delta
-	 */
-	public void preUpdate(float delta);
-	
-	/**
-	 * Called after scene update performing.
-	 * @param delta
-	 */
-	public void postUpdate(float delta);
-	
-	/**
-	 * Called before scene draw performing.
+	 * {@inheritDoc} 
 	 * @param batch
 	 */
-	public void preDraw(SpriteBatch batch);
-	
-	/**
-	 * Called after scene draw performing.
-	 * @param batch
-	 */
-	public void postDraw(SpriteBatch batch);
-	
-	/**
-	 * Called before scene debugging information draw performing.
-	 * @param gizmo
-	 */
-	public void preDebug(ShapeRenderer gizmo);
-	
-	/**
-	 * Called after scene debugging information draw performing.
-	 * @param gizmo
-	 */
-	public void postDebug(ShapeRenderer gizmo);
+	@Override
+	public void draw(SpriteBatch batch) {
+		if(editor != null) {
+			editor.draw(batch);
+		}
+	}
 }

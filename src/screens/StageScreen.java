@@ -31,6 +31,7 @@ import actors.TileActor;
 import com.badlogic.gdx.Gdx;
 import static com.badlogic.gdx.Gdx.gl;
 import com.badlogic.gdx.Input;
+import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.Texture;
@@ -38,18 +39,27 @@ import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.Fixture;
 import controllers.CameraController;
+import editor.PropHolder;
+import editor.PropSerialized;
 import main.Game;
+import scene.Actor;
 import system.Physics;
 import system.Debug;
+import system.Scene;
 /**
  *
  * @author Qiku
  */
 public class StageScreen implements GameScreen {
+        private final String filename;
 	Body body;
 	Fixture fixture;
+        
         private final CameraController camera = new CameraController();
-	
+        
+	public StageScreen(String filename) {
+		this.filename = Game.LEVELS_PATH + filename;
+	}
 	@Override
 	public void prepare() {
 		Game.assets.load("assets/dragonball.png", Texture.class);
@@ -65,25 +75,21 @@ public class StageScreen implements GameScreen {
                 Game.assets.load("assets/sound/jump_01.wav", Sound.class);
                 
                 //Game.assets.load("assets/sound/level1.mp3", Sound.class);
+                TileActor.preload();
 	}
 
 	@Override
 	public void show() {
-                reConfigure();
-		Game.scene.controllers.add(camera);
-                //Game.inputMultiplexer.addProcessor(camera);
+		reConfigure();
 		
-		// create turret actor
-		Game.scene.DEBUG.add(new DebugScreenActor());   
-                Game.scene.BACKGROUND.add(new BackgroundActor(0));
-                Game.scene.ACTION_2.add(new GroundActor(0));
-                Game.scene.ACTION_2.add(new SpikesActor(0));
-                Game.scene.ACTION_2.add(new TileActor(0));
-                Game.scene.ACTION_3.add(new BounceActor(0));
-                
-            //Sound sound = Gdx.audio.newSound(Gdx.files.internal("assets/sound/level1.mp3"));
-           // long idsound = sound.play(1.0f);        
-           //sound.setLooping(idsound, true);
+		// add scene controllers
+		Game.scene.controllers.add(camera);
+		
+		// register input processors
+		//Game.inputMultiplexer.addProcessor((InputProcessor) camera);
+		
+		// wczytaj scene
+		this.load(filename);
 	}
 
 	@Override
@@ -100,7 +106,29 @@ public class StageScreen implements GameScreen {
 	@Override
 	public void dispose() {
 	}
-        public void load(String filename) {
-		EditorScreen.PropsHolder props = new EditorScreen.PropsHolder();
+	public void load(String filename) {
+		PropHolder props = PropHolder.load(filename);
+		
+		// instance props onto the scene
+		for(PropSerialized prop : props) {
+			Actor actor = (Actor)prop.instance();
+			
+			// place the instanced actor
+			if(actor != null) {
+				Scene.Layer layer = Game.scene.BACKGROUND;				
+				// select layer
+				switch(prop.layer) {
+					case 1: layer = Game.scene.ACTION_1; break;
+					case 2: layer = Game.scene.ACTION_2; break;
+					case 3: layer = Game.scene.ACTION_3; break;
+					case 4: layer = Game.scene.FOREGROUND; break;
+					case 5: layer = Game.scene.GUI;break;
+					case 6: layer = Game.scene.DEBUG; break;
+				}
+				
+				// place the actor
+				layer.add(actor);
+			}
+		}
 	}
 }

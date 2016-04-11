@@ -1,6 +1,8 @@
 package main;
+import actors.BounceActor;
 import com.badlogic.gdx.Gdx;
 import static com.badlogic.gdx.Gdx.gl;
+import com.badlogic.gdx.InputMultiplexer;
 import com.badlogic.gdx.Input;
 import system.Scene;
 import com.badlogic.gdx.assets.AssetManager;
@@ -72,6 +74,7 @@ public class Game extends com.badlogic.gdx.Game {
 	 */
 	static public OrthographicCamera mainCamera;
         public static String LEVELS_PATH="assets/levels/";
+        static public final InputMultiplexer inputMultiplexer =  new InputMultiplexer();
 	
 	/**
 	 * Perform systems.
@@ -112,6 +115,7 @@ public class Game extends com.badlogic.gdx.Game {
 		// load configuration file
 		Game.config = Config.load(CONFIG_FILENAME, true);
 		Game.reConfigure();
+                Gdx.input.setInputProcessor(inputMultiplexer);
 		
 		// initialize game resources
 		Game.assets = new AssetManager();
@@ -141,7 +145,7 @@ public class Game extends com.badlogic.gdx.Game {
 				return "Nothing to restart";
 			}
 		});
-                Game.console.commands.put("edit", new ConsoleAction() {
+                Game.console.commands.put("create", new ConsoleAction() {
 			@Override
 			public String perform(String[] params) {
 				if(params.length == 2) {
@@ -151,17 +155,33 @@ public class Game extends com.badlogic.gdx.Game {
 				return "level name";
 			}
 		});
-                
+                Game.console.commands.put("respawn", new ConsoleAction() {
+			@Override
+			public String perform(String[] params) {
+				Game.scene.ACTION_1.add(new BounceActor(0));
+				return "respawn";
+			}
+		});
+                Game.console.commands.put("lvl", new ConsoleAction() {
+			@Override
+			public String perform(String[] params) {
+				if(params.length == 2) {
+					Game.app.setNextScreen(new StageScreen(params[1]));
+					return "Open scene for '" + params[1] + "'";
+				}
+				return "stage filename";
+			}
+		});               
 		
 		//Game.console.commands.put("cfg", new ConsoleAction() {
 			//@Override			
 		//});
 		
 		// wrap the main camera
-		Game.mainCamera = Game.scene.camera;
+		//Game.mainCamera = Game.scene.camera;
 		
 		// startup screen
-		this.setNextScreen(new StageScreen());
+		this.setNextScreen(new EditorScreen("a"));
     }
     
     /**
@@ -205,6 +225,13 @@ public class Game extends com.badlogic.gdx.Game {
 	 * @param next 
 	 */
 	public void setNextScreen(GameScreen next) {
+		inputMultiplexer.clear();
+		inputMultiplexer.addProcessor(Game.console);
+		
+		// open-up the screen loader
 		this.setScreen(new LoaderScreen(next));
+	}
+        public <T> T getScreenAs(Class<T> sceneType) {
+		return sceneType.cast(screen);
 	}
 }

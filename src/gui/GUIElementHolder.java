@@ -21,60 +21,56 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package system;
-
+package gui;
+import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
-import com.badlogic.gdx.utils.Disposable;
-
+import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.utils.Array;
+import java.util.Iterator;
 /**
  *
  * @author Qiku
  */
-public interface SceneController extends Disposable {
+public class GUIElementHolder implements Iterable<GUIElement> {
 	/**
-	 * Called before scene system performing.
+	 * Unordered stack of the GUI elements.
 	 */
-	public void prePerform();
+	public final Array<GUIElement> elements = new Array<>();
 	
 	/**
-	 * Called after scene system performing.
+	 * Returns element that bounds overlaps the point.
+	 * @param point 2D screen point representation.
+	 * @return GUI element from the gui stack. NULL on nothing todo.
 	 */
-	public void postPerform();
+	public GUIElement getOverPoint(Vector2 point) {
+		for(GUIElement element : this) {
+			if(element.getBounds().contains(point)) {
+				return element;
+			}
+		}
+		
+		return null;
+	}
 	
 	/**
-	 * Called before scene update performing.
-	 * @param delta
+	 * Draws the GUI elements.
+	 * @param shape
+	 * @param batch 
 	 */
-	public void preUpdate(float delta);
-	
+	public void draw(ShapeRenderer shape, SpriteBatch batch) {
+		// draw the shapes
+		for(GUIElement element : this) {
+			element.draw(shape, batch);
+		}
+	}
+
 	/**
-	 * Called after scene update performing.
-	 * @param delta
+	 * {@inheritDoc} 
 	 */
-	public void postUpdate(float delta);
-	
-	/**
-	 * Called before scene draw performing.
-	 * @param batch
-	 */
-	public void preDraw(SpriteBatch batch);
-	
-	/**
-	 * Called after scene draw performing.
-	 * @param batch
-	 */
-	public void postDraw(SpriteBatch batch);
-	
-	/**
-	 * Called before scene debugging information draw performing.
-	 * @param gizmo
-	 */
-	public void preDebug(ShapeRenderer gizmo);
-	
-	/**
-	 * Called after scene debugging information draw performing.
-	 * @param gizmo
-	 */
-	public void postDebug(ShapeRenderer gizmo);
+	@Override
+	public Iterator<GUIElement> iterator() {
+		return elements.iterator();
+	}
 }

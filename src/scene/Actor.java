@@ -22,15 +22,29 @@
  * THE SOFTWARE.
  */
 package scene;
-import com.badlogic.gdx.graphics.Color;
-import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
+import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Contact;
+import editor.PropActor;
+import editor.PropSerialized;
 import system.Scene;
 /**
  *
  * @author Qiku
  */
-public abstract class Actor implements Entity {
+public abstract class Actor extends PropActor implements Entity {
+	/**
+	 * Actor generic types.
+	 */
+	static public final int
+		TYPE_EDITOR = -1,
+		TYPE_UNKNOWN = 0,
+		TYPE_BACKGROUND = 1,
+		TYPE_PLAYER = 2,
+		TYPE_PROJECTILE = 3,
+		TYPE_OBSTACLE = 4,
+		TYPE_GUIELEMENT = 5,
+		TYPE_GUICONTROL = 6;
+	
 	/**
 	 * Layer assigned with the actor.
 	 */
@@ -59,11 +73,19 @@ public abstract class Actor implements Entity {
 	public boolean visible = true;
 	
 	/**
+	 * Editor constructor.
+	 * @param prop 
+	 */
+	public Actor(PropSerialized prop) {
+		this(prop.id);
+	}
+	
+	/**
 	 * Ctor.
 	 * @param id Unique actor identifier.
 	 */
 	public Actor(int id) {
-		this(id, 0);
+		this(id, TYPE_UNKNOWN);
 	}
 	
 	/**
@@ -82,7 +104,43 @@ public abstract class Actor implements Entity {
 	 * @return <b>TRUE</b> when the actor is already in the remove queue.
 	 */
 	public boolean remove() {
+		if(this.layer == null) {
+			return false;
+		}
+		
 		return this.layer.remove(this);
+	}
+	
+	/**
+	 * Get the position of the actor.
+	 * @return Position vector.
+	 */
+	public Vector2 getPosition() {
+		return Vector2.Zero;
+	}
+	
+	/**
+	 * Set the position of the actor.
+	 * @param position New position to assign.
+	 */
+	public void setPosition(Vector2 position) {
+		// dummy method
+	}
+	
+	/**
+	 * Get the angle in degrees.
+	 * @return Actor angle in degrees.
+	 */
+	public float getRotation() {
+		return 0.f;
+	}
+	
+	/**
+	 * Set the angle in degrees.
+	 * @param rotation New angle in degrees to assign.
+	 */
+	public void setRotation(float rotation) {
+		// dummy method
 	}
 	
 	/**
