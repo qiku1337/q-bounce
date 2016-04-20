@@ -1,13 +1,147 @@
 {
 props: [
 	{
-		class: "editor.TileProp",
+		class: "vault.q_bounce.editor.props.TileProp",
 		id: 0,
-		layer: 1,
+		layer: 2,
 		position: {
-			x: 1,
-			y: 1
-		}
+			x: 27,
+			y: -128
+		},
+		radius: 32,
+		zoomed: 1,
+		offset_x: 0,
+		offset_y: 0
+	},
+	{
+		class: "vault.q_bounce.editor.props.TileProp",
+		id: 0,
+		layer: 2,
+		position: {
+			x: 65.80003,
+			y: 263.80002
+		},
+		radius: 32,
+		zoomed: 1,
+		offset_x: 0,
+		offset_y: 0
+	},
+	{
+		class: "vault.q_bounce.editor.props.TileProp",
+		id: 0,
+		layer: 2,
+		position: {
+			x: -80.19997,
+			y: 249.80005
+		},
+		radius: 32,
+		zoomed: 1,
+		offset_x: 0,
+		offset_y: 0
+	},
+	{
+		class: "vault.q_bounce.editor.props.TileProp",
+		id: 0,
+		layer: 2,
+		position: {
+			x: -46,
+			y: -122
+		},
+		radius: 32,
+		zoomed: 1,
+		offset_x: 0,
+		offset_y: 0
+	},
+	{
+		class: "vault.q_bounce.editor.props.TileProp",
+		id: 0,
+		layer: 2,
+		position: {
+			x: -117,
+			y: -118
+		},
+		radius: 32,
+		zoomed: 1,
+		offset_x: 0,
+		offset_y: 0
+	},
+	{
+		class: "vault.q_bounce.editor.props.BounceProp",
+		id: 0,
+		layer: 2,
+		position: {
+			x: -76,
+			y: 335
+		},
+		radius: 32,
+		zoomed: 1,
+		offset_x: 0,
+		offset_y: 0
+	},
+	{
+		class: "vault.q_bounce.editor.props.TileProp",
+		id: 0,
+		layer: 2,
+		position: {
+			x: -9,
+			y: 243
+		},
+		radius: 32,
+		zoomed: 1,
+		offset_x: 0,
+		offset_y: 0
+	},
+	{
+		class: "vault.q_bounce.editor.props.TileProp",
+		id: 0,
+		layer: 2,
+		position: {
+			x: 150,
+			y: 242
+		},
+		radius: 32,
+		zoomed: 1,
+		offset_x: 0,
+		offset_y: 0
+	},
+	{
+		class: "vault.q_bounce.editor.props.TileProp",
+		id: 0,
+		layer: 2,
+		position: {
+			x: -205,
+			y: 264
+		},
+		radius: 32,
+		zoomed: 1,
+		offset_x: 0,
+		offset_y: 0
+	},
+	{
+		class: "vault.q_bounce.editor.props.TileProp",
+		id: 0,
+		layer: 2,
+		position: {
+			x: -242,
+			y: 377
+		},
+		radius: 32,
+		zoomed: 1,
+		offset_x: 0,
+		offset_y: 0
+	},
+	{
+		class: "vault.q_bounce.editor.props.TileProp",
+		id: 0,
+		layer: 2,
+		position: {
+			x: -135,
+			y: 339
+		},
+		radius: 32,
+		zoomed: 1,
+		offset_x: 0,
+		offset_y: 0
 	}
 ]
 }
