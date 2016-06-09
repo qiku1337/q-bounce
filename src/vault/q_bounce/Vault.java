@@ -27,6 +27,7 @@ import com.badlogic.gdx.utils.Array;
 
 import vault.q_bounce.editor.PropSerialized;
 import vault.q_bounce.editor.props.BounceProp;
+import vault.q_bounce.editor.props.SpikesProp;
 import vault.q_bounce.editor.props.TileProp;
 
 /**
@@ -36,10 +37,8 @@ import vault.q_bounce.editor.props.TileProp;
 public abstract class Vault {
 
 	
-	/**
-	 * Teksutry menu.
-	 */
-	static public final String MENU_BACK_TO_MENU = "assets/back-to-menu.png";
+
+	
 	
 	/**
 	 * Klasy propów widoczne dla edytora.
@@ -47,7 +46,8 @@ public abstract class Vault {
 	static public final Array<Class<? extends PropSerialized>> PROP_CLASSES = new Array<>(
 		new Class[] {
 			TileProp.class,
-                        BounceProp.class
+                        BounceProp.class,
+                        SpikesProp.class
 		}
 	);
 	

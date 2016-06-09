@@ -42,11 +42,11 @@ import vault.q_bounce.system.SceneController;
  */
 public class MenuController implements SceneController {
 	public boolean showMenu = false;
-	private Sprite sprMenu;
+	//private Sprite sprMenu;
 	private OrthographicCamera camera;
 	
 	public MenuController() {
-		sprMenu = new Sprite(Game.assets.get(Vault.MENU_BACK_TO_MENU, Texture.class));
+		//sprMenu = new Sprite(Game.assets.get(Vault.MENU_BACK_TO_MENU, Texture.class));
 		
 		camera = new OrthographicCamera();
 	}
@@ -88,12 +88,12 @@ public class MenuController implements SceneController {
 			Matrix4 oldProj = batch.getProjectionMatrix();
 			batch.setProjectionMatrix(camera.combined);
 			
-			sprMenu.setCenter(camera.viewportWidth/2, camera.viewportHeight/2);
+			//sprMenu.setCenter(camera.viewportWidth/2, camera.viewportHeight/2);
 
 			batch.begin();
-			sprMenu.draw(batch);
+			//sprMenu.draw(batch);
 			batch.end();
-			batch.setShader(null);
+			//batch.setShader(null);
 		}
 	}
 

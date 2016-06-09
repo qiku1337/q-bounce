@@ -73,7 +73,7 @@ public class StageScreen implements GameScreen {
                 Game.assets.load("assets/ballmove.png", Texture.class);
 
 		
-		Game.assets.load(Vault.MENU_BACK_TO_MENU, Texture.class);
+		
 		
 		// preload resources
 		TileActor.preload();

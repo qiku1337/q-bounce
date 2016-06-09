@@ -29,7 +29,10 @@ import com.badlogic.gdx.physics.box2d.BodyDef;
 import com.badlogic.gdx.physics.box2d.Fixture;
 import com.badlogic.gdx.physics.box2d.PolygonShape;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.math.Vector2;
 import vault.q_bounce.Game;
+import static vault.q_bounce.actors.TileActor.TILE_TEXTURE;
+import vault.q_bounce.editor.PropSerialized;
 import vault.q_bounce.scene.Actor;
 import vault.q_bounce.system.Physics;
 /**
@@ -41,7 +44,12 @@ public class SpikesActor extends Actor {
 	private final Fixture fixture;
         private Sprite sprite;
         static public final String SPIKES_TEXTURE = "assets/spike_A.png";
-	
+	public SpikesActor(PropSerialized prop) {
+		this(prop.id);
+		
+		// load position
+		setPosition(prop.position);
+	}	
 	public SpikesActor(int id) {
 		super(id);
 		
@@ -74,10 +82,41 @@ public class SpikesActor extends Actor {
 		batch.end();
 	}
         public static void preload() {
-            Game.assets.load(SPIKES_TEXTURE, Texture.class);
+            Game.assets.load(TILE_TEXTURE, Texture.class);
         }
         @Override
-            public void dispose(){
-        Game.physics.world.destroyBody(body);       
-    }
+        public void dispose(){
+            Game.physics.world.destroyBody(body);       
+        }
+        @Override
+	public Vector2 getPosition() {
+		return body.getTransform().getPosition().scl(Physics.SCALE_INV);
+	}
+	
+	/**
+	 * @see Actor#setPosition(com.badlogic.gdx.math.Vector2) 
+	 * @param newPosition 
+	 */
+	@Override
+	public void setPosition(Vector2 newPosition) {
+		body.setTransform(newPosition.cpy().scl(Physics.SCALE), body.getTransform().getRotation());
+	}	
+	/**
+	 * @see Actor#getRotation() 
+	 * @return 
+	 */
+	@Override
+	public float getRotation() {
+		return body.getTransform().getRotation();
+	}
+	
+	/**
+	 * @see Actor#setRotation(float) 
+	 * @param newAngle
+	 */
+	@Override
+	public void setRotation(float newAngle) {
+		body.getTransform().setRotation(newAngle);
+	}	
 }
+

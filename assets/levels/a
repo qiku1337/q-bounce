@@ -142,6 +142,19 @@ props: [
 		zoomed: 1,
 		offset_x: 0,
 		offset_y: 0
+	},
+	{
+		class: "vault.q_bounce.editor.props.SpikesProp",
+		id: 0,
+		layer: 2,
+		position: {
+			x: 62.999977,
+			y: 320
+		},
+		radius: 32,
+		zoomed: 1,
+		offset_x: 0,
+		offset_y: 0
 	}
 ]
 }
