@@ -71,6 +71,8 @@ public class StageScreen implements GameScreen {
 		Game.assets.load("assets/Tile.png", Texture.class);
                 Game.assets.load("assets/spike_A.png", Texture.class);
                 Game.assets.load("assets/ballmove.png", Texture.class);
+                Game.assets.load("assets/layer-1.png", Texture.class);
+                Game.assets.load("assets/finish.png", Texture.class);
 
 		
 		

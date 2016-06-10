@@ -219,12 +219,12 @@ public class BounceActor extends Actor {
     }
     @Override
     public void onHit(Actor actor, Contact contact) {
-	if(actor instanceof TileActor) {
+	if(actor instanceof TileActor || actor instanceof GroundActor) {
             allowjump=true;
             sound = Gdx.audio.newSound(Gdx.files.internal("assets/sound/jumpland.mp3"));
             long idsound = sound.play(1.0f);                
 	}
-        if(actor instanceof SpikesActor) {
+        if(actor instanceof SpikesActor || actor instanceof FinishActor) {
              this.remove();
         }
     }	

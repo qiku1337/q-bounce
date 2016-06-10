@@ -204,7 +204,7 @@ public class Game extends com.badlogic.gdx.Game {
 				return "stage filename";
 			}
 		});
-                Game.console.commands.put("spawn", new ConsoleAction() {
+                Game.console.commands.put("re", new ConsoleAction() {
 			@Override
 			public String perform(String[] params) {
 				Game.scene.ACTION_1.add(new BounceActor(0));
