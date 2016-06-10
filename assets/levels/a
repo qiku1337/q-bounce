@@ -5,10 +5,10 @@ props: [
 		id: 0,
 		layer: 2,
 		position: {
-			x: 27,
-			y: -128
+			x: 91.99998,
+			y: -21.500008
 		},
-		radius: 32,
+		r: 50,
 		zoomed: 1,
 		offset_x: 0,
 		offset_y: 0
@@ -18,10 +18,10 @@ props: [
 		id: 0,
 		layer: 2,
 		position: {
-			x: 65.80003,
-			y: 263.80002
+			x: 22.000027,
+			y: 250.00002
 		},
-		radius: 32,
+		r: 50,
 		zoomed: 1,
 		offset_x: 0,
 		offset_y: 0
@@ -31,10 +31,10 @@ props: [
 		id: 0,
 		layer: 2,
 		position: {
-			x: -80.19997,
-			y: 249.80005
+			x: -97.000015,
+			y: -21.500008
 		},
-		radius: 32,
+		r: 50,
 		zoomed: 1,
 		offset_x: 0,
 		offset_y: 0
@@ -44,10 +44,10 @@ props: [
 		id: 0,
 		layer: 2,
 		position: {
-			x: -46,
-			y: -122
+			x: 44.99999,
+			y: -21.500008
 		},
-		radius: 32,
+		r: 50,
 		zoomed: 1,
 		offset_x: 0,
 		offset_y: 0
@@ -57,10 +57,10 @@ props: [
 		id: 0,
 		layer: 2,
 		position: {
-			x: -117,
-			y: -118
+			x: -2.9999993,
+			y: -21.500008
 		},
-		radius: 32,
+		r: 50,
 		zoomed: 1,
 		offset_x: 0,
 		offset_y: 0
@@ -70,8 +70,8 @@ props: [
 		id: 0,
 		layer: 2,
 		position: {
-			x: -76,
-			y: 335
+			x: -46.999977,
+			y: 59.999996
 		},
 		radius: 32,
 		zoomed: 1,
@@ -83,10 +83,10 @@ props: [
 		id: 0,
 		layer: 2,
 		position: {
-			x: -9,
-			y: 243
+			x: -50,
+			y: -21.999989
 		},
-		radius: 32,
+		r: 50,
 		zoomed: 1,
 		offset_x: 0,
 		offset_y: 0
@@ -99,7 +99,7 @@ props: [
 			x: 150,
 			y: 242
 		},
-		radius: 32,
+		r: 50,
 		zoomed: 1,
 		offset_x: 0,
 		offset_y: 0
@@ -112,7 +112,7 @@ props: [
 			x: -205,
 			y: 264
 		},
-		radius: 32,
+		r: 50,
 		zoomed: 1,
 		offset_x: 0,
 		offset_y: 0
@@ -125,7 +125,7 @@ props: [
 			x: -242,
 			y: 377
 		},
-		radius: 32,
+		r: 50,
 		zoomed: 1,
 		offset_x: 0,
 		offset_y: 0
@@ -138,7 +138,7 @@ props: [
 			x: -135,
 			y: 339
 		},
-		radius: 32,
+		r: 50,
 		zoomed: 1,
 		offset_x: 0,
 		offset_y: 0
@@ -148,10 +148,23 @@ props: [
 		id: 0,
 		layer: 2,
 		position: {
-			x: 62.999977,
-			y: 320
+			x: 64.99996,
+			y: 319
 		},
 		radius: 32,
+		zoomed: 1,
+		offset_x: 0,
+		offset_y: 0
+	},
+	{
+		class: "vault.q_bounce.editor.props.GroundProp",
+		id: 0,
+		layer: 2,
+		position: {
+			x: -309,
+			y: 42.999985
+		},
+		r: 50,
 		zoomed: 1,
 		offset_x: 0,
 		offset_y: 0

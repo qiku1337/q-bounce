@@ -38,6 +38,7 @@ import com.badlogic.gdx.physics.box2d.BodyDef;
 import com.badlogic.gdx.physics.box2d.Fixture;
 import com.badlogic.gdx.physics.box2d.PolygonShape;
 import com.badlogic.gdx.physics.box2d.Contact;
+import vault.q_bounce.Config;
 import vault.q_bounce.Game;
 import vault.q_bounce.editor.PropSerialized;
 import vault.q_bounce.scene.Actor;
@@ -179,8 +180,8 @@ public class BounceActor extends Actor {
                 currentFrame,                                 
                 -18.f+getX()*100.f, 
                 -15.f+getY()*100.f,                     //miejsce rysowania
-                Gdx.graphics.getWidth()/22.f,
-                Gdx.graphics.getHeight()/18.f  //wielkosc
+                Gdx.graphics.getWidth()/38.f,
+                Gdx.graphics.getHeight()/28.f  //wielkosc
         );
         batch.end(); 
     }

@@ -37,7 +37,7 @@ public class TileProp extends PropSerialized {
 	/**
 	 * Editable field.
 	 */
-	public float radius = 32.f;
+	public float r = 50.f;
         /**
 	 * Multiplikator odleglosci kamery.
 	 */
@@ -62,7 +62,8 @@ public class TileProp extends PropSerialized {
 	@Override
 	public void draw(ShapeRenderer gizmo) {
 		gizmo.setColor(Color.YELLOW);
-		gizmo.circle(position.x, position.y, radius);
+		//gizmo.circle(position.x, position.y, radius);
+                gizmo.box(position.x-r/2, position.y-r/2, zoomed, r, r, r);
 	}
 
 	/**

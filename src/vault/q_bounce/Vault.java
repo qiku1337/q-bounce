@@ -27,6 +27,7 @@ import com.badlogic.gdx.utils.Array;
 
 import vault.q_bounce.editor.PropSerialized;
 import vault.q_bounce.editor.props.BounceProp;
+import vault.q_bounce.editor.props.GroundProp;
 import vault.q_bounce.editor.props.SpikesProp;
 import vault.q_bounce.editor.props.TileProp;
 
@@ -47,7 +48,8 @@ public abstract class Vault {
 		new Class[] {
 			TileProp.class,
                         BounceProp.class,
-                        SpikesProp.class
+                        SpikesProp.class,
+                        GroundProp.class
 		}
 	);
 	

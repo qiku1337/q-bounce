@@ -25,7 +25,7 @@ package vault.q_bounce.editor.props;
 
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
-import vault.q_bounce.actors.SpikesActor;
+import vault.q_bounce.actors.GroundActor;
 import vault.q_bounce.actors.TileActor;
 import vault.q_bounce.editor.PropActor;
 import vault.q_bounce.editor.PropSerialized;
@@ -34,11 +34,11 @@ import vault.q_bounce.editor.PropSerialized;
  *
  * @author Qiku
  */
-public class SpikesProp extends PropSerialized {
+public class GroundProp extends PropSerialized {
 	/**
 	 * Editable field.
 	 */
-	public float radius = 32.f;
+	public float r = 50.f;
         /**
 	 * Multiplikator odleglosci kamery.
 	 */
@@ -51,7 +51,7 @@ public class SpikesProp extends PropSerialized {
 	 * Przesuniecie tla.
 	 */
 	public float offset_x = 0.f, offset_y = 0.f;
-	public SpikesProp() {
+	public GroundProp() {
 		this.layer = 2;
 	}
         
@@ -62,8 +62,9 @@ public class SpikesProp extends PropSerialized {
 	 */
 	@Override
 	public void draw(ShapeRenderer gizmo) {
-		gizmo.setColor(Color.YELLOW);		
-                gizmo.box(position.x-15, position.y-15, zoomed, radius, radius, radius);
+		gizmo.setColor(Color.YELLOW);
+		//gizmo.circle(position.x, position.y, radius);
+                gizmo.box(position.x-r*2, position.y-r/2, zoomed, r*4, r, r);
 	}
 
 	/**
@@ -72,6 +73,6 @@ public class SpikesProp extends PropSerialized {
 	 */
 	@Override
 	public Class<? extends PropActor> getActorClass() {
-		return SpikesActor.class;
+		return GroundActor.class;
 	}
 }
